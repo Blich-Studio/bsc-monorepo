@@ -1,0 +1,89 @@
+@use 'variables' as vars;
+@use 'mixins' as mixins;
+
+.table-container {
+  overflow-x: auto;
+  margin-top: vars.$space-8;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead {
+    border-bottom: 1px solid vars.$color-gray-300;
+
+    th {
+      padding: vars.$space-3 vars.$space-3;
+      text-align: left;
+      font-size: vars.$font-size-sm;
+      font-weight: vars.$font-weight-semibold;
+      color: vars.$color-gray-900;
+
+      &:first-child {
+        padding-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid vars.$color-gray-200;
+
+      &:hover {
+        background-color: vars.$color-gray-50;
+      }
+    }
+
+    td {
+      padding: vars.$space-4 vars.$space-3;
+      font-size: vars.$font-size-sm;
+      color: vars.$color-gray-500;
+      white-space: nowrap;
+
+      &:first-child {
+        padding-left: 0;
+        font-weight: vars.$font-weight-medium;
+        color: vars.$color-gray-900;
+      }
+
+      &:last-child {
+        padding-right: 0;
+        text-align: right;
+      }
+    }
+  }
+}
+
+.table-actions {
+  display: flex;
+  gap: vars.$space-4;
+  justify-content: flex-end;
+
+  a, button {
+    font-size: vars.$font-size-sm;
+    font-weight: vars.$font-weight-medium;
+    cursor: pointer;
+    @include mixins.transition();
+
+    &.action-edit {
+      color: vars.$color-primary-600;
+
+      &:hover {
+        color: vars.$color-primary-700;
+      }
+    }
+
+    &.action-delete {
+      color: vars.$color-red-600;
+
+      &:hover {
+        color: vars.$color-red-700;
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+@use 'variables' as vars;
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: vars.$font-weight-semibold;
+  line-height: vars.$line-height-tight;
+  color: vars.$color-gray-900;
+}
+
+h1 {
+  font-size: vars.$font-size-3xl;
+}
+
+h2 {
+  font-size: vars.$font-size-2xl;
+}
+
+h3 {
+  font-size: vars.$font-size-xl;
+}
+
+h4 {
+  font-size: vars.$font-size-lg;
+}
+
+p {
+  margin-bottom: vars.$space-4;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.text-xs { font-size: vars.$font-size-xs; }
+.text-sm { font-size: vars.$font-size-sm; }
+.text-base { font-size: vars.$font-size-base; }
+.text-lg { font-size: vars.$font-size-lg; }
+.text-xl { font-size: vars.$font-size-xl; }
+.text-2xl { font-size: vars.$font-size-2xl; }
+
+.font-normal { font-weight: vars.$font-weight-normal; }
+.font-medium { font-weight: vars.$font-weight-medium; }
+.font-semibold { font-weight: vars.$font-weight-semibold; }
+.font-bold { font-weight: vars.$font-weight-bold; }
+
+.text-gray-500 { color: vars.$color-gray-500; }
+.text-gray-600 { color: vars.$color-gray-600; }
+.text-gray-700 { color: vars.$color-gray-700; }
+.text-gray-900 { color: vars.$color-gray-900; }

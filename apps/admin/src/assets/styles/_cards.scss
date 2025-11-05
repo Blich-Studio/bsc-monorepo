@@ -1,0 +1,24 @@
+@use 'variables' as vars;
+@use 'mixins' as mixins;
+
+.card {
+  @include mixins.card;
+}
+
+.card-header {
+  padding-bottom: vars.$space-4;
+  border-bottom: 1px solid vars.$color-gray-200;
+  margin-bottom: vars.$space-4;
+}
+
+.card-title {
+  font-size: vars.$font-size-lg;
+  font-weight: vars.$font-weight-semibold;
+  color: vars.$color-gray-900;
+}
+
+.card-footer {
+  padding-top: vars.$space-4;
+  border-top: 1px solid vars.$color-gray-200;
+  margin-top: vars.$space-4;
+}

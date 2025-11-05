@@ -1,0 +1,71 @@
+@use 'variables' as vars;
+@use 'mixins' as mixins;
+
+.form-group {
+  margin-bottom: vars.$space-4;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: vars.$space-2;
+  font-size: vars.$font-size-sm;
+  font-weight: vars.$font-weight-medium;
+  color: vars.$color-gray-700;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  @include mixins.input-base;
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right vars.$space-2 center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: vars.$space-10;
+  appearance: none;
+}
+
+.form-checkbox {
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid vars.$color-gray-300;
+  border-radius: vars.$radius-sm;
+  cursor: pointer;
+  @include mixins.transition(all);
+
+  &:checked {
+    background-color: vars.$color-primary-600;
+    border-color: vars.$color-primary-600;
+  }
+
+  &:focus {
+    @include mixins.focus-ring;
+  }
+}
+
+.form-error {
+  margin-top: vars.$space-2;
+  font-size: vars.$font-size-sm;
+  color: vars.$color-red-600;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-2;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: vars.$space-2;
+    cursor: pointer;
+  }
+}

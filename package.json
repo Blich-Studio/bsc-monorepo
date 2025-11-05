@@ -1,0 +1,24 @@
+{
+  "name": "blich-studio-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "cms:dev": "npm run dev --workspace=apps/cms-backend",
+    "api:dev": "npm run dev --workspace=apps/game-api",
+    "web:dev": "npm run dev --workspace=apps/web",
+    "admin:dev": "npm run dev --workspace=apps/admin",
+    "dev:all": "concurrently \"npm:cms:dev\" \"npm:api:dev\" \"npm:web:dev\" \"npm:admin:dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "turbo": "^1.13.0"
+  },
+  "dependencies": {
+    "vue-router": "^4.6.3"
+  }
+}

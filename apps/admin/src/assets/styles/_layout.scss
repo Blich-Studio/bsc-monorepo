@@ -1,0 +1,217 @@
+@use 'variables' as vars;
+@use 'mixins' as mixins;
+
+.app-container {
+  min-height: 100vh;
+  background-color: vars.$color-gray-50;
+}
+
+// Sidebar
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: vars.$sidebar-width;
+  background-color: vars.$color-white;
+  border-right: 1px solid vars.$color-gray-200;
+  display: none;
+  flex-direction: column;
+  z-index: 50;
+
+  @include mixins.respond-to('lg') {
+    display: flex;
+  }
+}
+
+.sidebar-header {
+  height: vars.$header-height;
+  display: flex;
+  align-items: center;
+  padding: 0 vars.$space-6;
+  flex-shrink: 0;
+}
+
+.sidebar-logo {
+  font-size: vars.$font-size-xl;
+  font-weight: vars.$font-weight-bold;
+  color: vars.$color-primary-600;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: vars.$space-6;
+  overflow-y: auto;
+}
+
+.nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-1;
+}
+
+.nav-item {
+  a {
+    display: flex;
+    align-items: center;
+    gap: vars.$space-3;
+    padding: vars.$space-2;
+    border-radius: vars.$radius-base;
+    font-size: vars.$font-size-sm;
+    font-weight: vars.$font-weight-semibold;
+    color: vars.$color-gray-700;
+    @include mixins.transition();
+
+    &:hover {
+      background-color: vars.$color-gray-50;
+      color: vars.$color-primary-600;
+    }
+
+    &.active {
+      background-color: vars.$color-gray-50;
+      color: vars.$color-primary-600;
+
+      svg {
+        color: vars.$color-primary-600;
+      }
+    }
+
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+      color: vars.$color-gray-400;
+      @include mixins.transition();
+    }
+  }
+}
+
+// Main Content
+.main-content {
+  @include mixins.respond-to('lg') {
+    padding-left: vars.$sidebar-width;
+  }
+}
+
+// Header
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  height: vars.$header-height;
+  background-color: vars.$color-white;
+  border-bottom: 1px solid vars.$color-gray-200;
+  box-shadow: vars.$shadow-sm;
+  display: flex;
+  align-items: center;
+  padding: 0 vars.$space-4;
+
+  @include mixins.respond-to('lg') {
+    padding: 0 vars.$space-8;
+  }
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.header-user {
+  position: relative;
+}
+
+.user-menu-button {
+  display: flex;
+  align-items: center;
+  gap: vars.$space-2;
+  padding: vars.$space-2;
+  background: none;
+  border: none;
+  font-size: vars.$font-size-sm;
+  font-weight: vars.$font-weight-semibold;
+  color: vars.$color-gray-700;
+  cursor: pointer;
+  @include mixins.transition();
+
+  &:hover {
+    color: vars.$color-gray-900;
+  }
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.user-menu-dropdown {
+  position: absolute;
+  right: 0;
+  margin-top: vars.$space-2;
+  width: 12rem;
+  background-color: vars.$color-white;
+  border-radius: vars.$radius-base;
+  box-shadow: vars.$shadow-lg;
+  border: 1px solid vars.$color-gray-200;
+  overflow: hidden;
+
+  button {
+    width: 100%;
+    padding: vars.$space-3 vars.$space-4;
+    text-align: left;
+    font-size: vars.$font-size-sm;
+    color: vars.$color-gray-700;
+    background: none;
+    border: none;
+    cursor: pointer;
+    @include mixins.transition();
+
+    &:hover {
+      background-color: vars.$color-gray-100;
+    }
+  }
+}
+
+// Page Container
+.page-container {
+  padding: vars.$space-6;
+
+  @include mixins.respond-to('lg') {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: vars.$space-6 vars.$space-8;
+  }
+}
+
+// Page Header
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-4;
+
+  @include mixins.respond-to('sm') {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.page-title {
+  h1 {
+    font-size: vars.$font-size-2xl;
+    font-weight: vars.$font-weight-semibold;
+    color: vars.$color-gray-900;
+  }
+
+  p {
+    margin-top: vars.$space-2;
+    font-size: vars.$font-size-sm;
+    color: vars.$color-gray-700;
+    margin-bottom: 0;
+  }
+}
+
+.page-actions {
+  display: flex;
+  gap: vars.$space-2;
+}

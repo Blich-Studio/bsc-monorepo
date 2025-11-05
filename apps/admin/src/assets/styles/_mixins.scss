@@ -1,0 +1,83 @@
+@use 'variables' as vars;
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin transition($property: all) {
+  transition: $property vars.$transition-base ease-in-out;
+}
+
+@mixin focus-ring {
+  outline: 2px solid vars.$color-primary-500;
+  outline-offset: 2px;
+}
+
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: vars.$space-2 vars.$space-4;
+  border: none;
+  border-radius: vars.$radius-base;
+  font-size: vars.$font-size-sm;
+  font-weight: vars.$font-weight-semibold;
+  cursor: pointer;
+  @include transition();
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@mixin input-base {
+  display: block;
+  width: 100%;
+  padding: vars.$space-2 vars.$space-3;
+  border: 1px solid vars.$color-gray-300;
+  border-radius: vars.$radius-base;
+  font-size: vars.$font-size-sm;
+  line-height: vars.$line-height-normal;
+  @include transition(border-color);
+
+  &:focus {
+    outline: none;
+    border-color: vars.$color-primary-500;
+    box-shadow: 0 0 0 3px rgba(vars.$color-primary-500, 0.1);
+  }
+}
+
+@mixin card {
+  background: vars.$color-white;
+  border-radius: vars.$radius-lg;
+  box-shadow: vars.$shadow-sm;
+  padding: vars.$space-6;
+}
+
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == 'sm' {
+    @media (min-width: vars.$breakpoint-sm) { @content; }
+  }
+  @else if $breakpoint == 'md' {
+    @media (min-width: vars.$breakpoint-md) { @content; }
+  }
+  @else if $breakpoint == 'lg' {
+    @media (min-width: vars.$breakpoint-lg) { @content; }
+  }
+  @else if $breakpoint == 'xl' {
+    @media (min-width: vars.$breakpoint-xl) { @content; }
+  }
+}
