@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.23",
@@ -20,9 +22,11 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
+    "@blich-studio/eslint-config": "file:../../packages/eslint-config",
     "@types/node": "^24.10.0",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/tsconfig": "^0.8.1",
+    "eslint": "^9.9.0",
     "sass": "^1.93.3",
     "typescript": "~5.9.3",
     "vite": "^7.1.7",

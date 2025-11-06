@@ -1,13 +1,13 @@
 <template>
   <div class="studio-editor">
     <div class="editor-header">
-      <h1>{{ isEditing ? 'Edit Studio' : 'Create Studio' }}</h1>
-      <button @click="saveStudio" class="save-button" :disabled="!isValid">
-        {{ isEditing ? 'Update' : 'Save' }}
+      <h1>{{ isEditing ? "Edit Studio" : "Create Studio" }}</h1>
+      <button class="save-button" @click="saveStudio" :disabled="!isValid">
+        {{ isEditing ? "Update" : "Save" }}
       </button>
     </div>
 
-    <form @submit.prevent="saveStudio" class="editor-form">
+    <form class="editor-form" @submit.prevent="saveStudio">
       <div class="form-group">
         <label for="name">Studio Name</label>
         <input
@@ -26,7 +26,7 @@
           v-model="form.description"
           rows="4"
           class="form-textarea"
-        ></textarea>
+        />
       </div>
 
       <div class="form-group">
@@ -63,57 +63,54 @@
 
       <div class="form-group">
         <label for="logo">Logo URL</label>
-        <input
-          id="logo"
-          v-model="form.logo"
-          type="url"
-          class="form-input"
-        />
+        <input id="logo"
+v-model="form.logo" type="url" class="form-input"
+/>
       </div>
     </form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, computed, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
-const isEditing = computed(() => !!route.params.id)
+const isEditing = computed(() => !!route.params.id);
 
 const form = ref({
-  name: '',
-  description: '',
-  website: '',
+  name: "",
+  description: "",
+  website: "",
   foundedYear: null as number | null,
-  headquarters: '',
-  logo: ''
-})
+  headquarters: "",
+  logo: "",
+});
 
 const isValid = computed(() => {
-  return form.value.name.trim()
-})
+  return form.value.name.trim();
+});
 
 const saveStudio = async () => {
-  if (!isValid.value) return
+  if (!isValid.value) return;
 
   try {
     // TODO: Implement studio API calls
-    console.log('Saving studio:', form.value)
-    router.push('/studio')
+    console.log("Saving studio:", form.value);
+    router.push("/studio");
   } catch (error) {
-    console.error('Failed to save studio:', error)
+    console.error("Failed to save studio:", error);
   }
-}
+};
 
 onMounted(() => {
   if (isEditing.value) {
     // TODO: Load existing studio data
-    console.log('Loading studio:', route.params.id)
+    console.log("Loading studio:", route.params.id);
   }
-})
+});
 </script>
 
 <style scoped>

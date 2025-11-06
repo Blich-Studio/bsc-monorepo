@@ -5,10 +5,11 @@
         <h2>Game Studio CMS</h2>
         <p>Sign in to your admin account</p>
       </div>
-      
-      <form @submit.prevent="handleLogin" class="login-form">
+
+      <form class="login-form" @submit.prevent="handleLogin">
         <div class="form-group">
-          <label for="email" class="form-label">Email address</label>
+          <label for="email"
+class="form-label">Email address</label>
           <input
             id="email"
             v-model="email"
@@ -18,9 +19,10 @@
             placeholder="Enter your email"
           />
         </div>
-        
+
         <div class="form-group">
-          <label for="password" class="form-label">Password</label>
+          <label for="password"
+class="form-label">Password</label>
           <input
             id="password"
             v-model="password"
@@ -31,7 +33,8 @@
           />
         </div>
 
-        <div v-if="authStore.error" class="form-error">
+        <div v-if="authStore.error"
+class="form-error">
           {{ authStore.error }}
         </div>
 
@@ -40,7 +43,7 @@
           :disabled="authStore.loading"
           class="btn btn-primary btn-block"
         >
-          {{ authStore.loading ? 'Signing in...' : 'Sign in' }}
+          {{ authStore.loading ? "Signing in..." : "Sign in" }}
         </button>
       </form>
     </div>
@@ -48,26 +51,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
 
 const router = useRouter();
 const authStore = useAuthStore();
 
-const email = ref('');
-const password = ref('');
+const email = ref("");
+const password = ref("");
 
 const handleLogin = async () => {
   const success = await authStore.login(email.value, password.value);
   if (success) {
-    router.push('/');
+    router.push("/");
   }
 };
 </script>
 
 <style scoped lang="scss">
-@use '@/assets/styles/variables' as vars;
+@use "@/assets/styles/variables" as vars;
 
 .login-container {
   display: flex;

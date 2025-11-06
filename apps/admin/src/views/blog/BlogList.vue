@@ -6,28 +6,32 @@
         <p>Manage your blog content</p>
       </div>
       <div class="page-actions">
-        <router-link to="/blog/create" class="btn btn-primary">
+        <router-link to="/blog/create"
+class="btn btn-primary">
           New Post
         </router-link>
       </div>
     </div>
 
-    <div v-if="blogStore.loading" class="loading">
+    <div v-if="blogStore.loading"
+class="loading">
       <p>Loading posts...</p>
     </div>
 
-    <div v-else class="table-container">
+    <div v-else
+class="table-container">
       <table class="table">
         <thead>
           <tr>
             <th>Title</th>
             <th>Status</th>
             <th>Published Date</th>
-            <th></th>
+            <th />
           </tr>
         </thead>
         <tbody>
-          <tr v-for="post in blogStore.posts" :key="post.id">
+          <tr v-for="post in blogStore.posts"
+:key="post.id">
             <td>{{ post.title }}</td>
             <td>
               <span :class="['status-badge', `status-${post.status}`]">
@@ -35,20 +39,20 @@
               </span>
             </td>
             <td>
-              {{ post.publishedAt ? new Date(post.publishedAt).toLocaleDateString() : '-' }}
+              {{
+                post.publishedAt
+                  ? new Date(post.publishedAt).toLocaleDateString()
+                  : "-"
+              }}
             </td>
             <td>
               <div class="table-actions">
-                <router-link
-                  :to="`/blog/${post.id}/edit`"
-                  class="action-edit"
-                >
+                <router-link :to="`/blog/${post.id}/edit`" class="action-edit">
                   Edit
                 </router-link>
                 <button
-                  @click="handleDelete(post.id!)"
-                  class="action-delete"
-                >
+class="action-delete" @click="handleDelete(post.id!)"
+>
                   Delete
                 </button>
               </div>
@@ -61,8 +65,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { useBlogStore } from '@/stores/blog';
+import { onMounted } from "vue";
+import { useBlogStore } from "@/stores/blog";
 
 const blogStore = useBlogStore();
 
@@ -71,7 +75,7 @@ onMounted(() => {
 });
 
 const handleDelete = async (id: number) => {
-  if (confirm('Are you sure you want to delete this post?')) {
+  if (confirm("Are you sure you want to delete this post?")) {
     await blogStore.deletePost(id);
   }
 };
