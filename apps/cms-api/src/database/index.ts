@@ -1,8 +1,7 @@
-import { logger } from '@blich-studio/shared'
+import { DatabaseError, logger } from '@blich-studio/shared'
 import type { Db, MongoClientOptions } from 'mongodb'
 import { MongoClient } from 'mongodb'
 import { config } from '../config'
-import { DatabaseError } from '../types'
 
 class Database {
   private client: MongoClient | null = null

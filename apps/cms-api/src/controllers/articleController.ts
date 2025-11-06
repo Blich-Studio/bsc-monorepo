@@ -1,11 +1,9 @@
+import type { Article, CreateArticleInput, UpdateArticleInput } from '@blich-studio/shared'
+import { CreateArticleSchema, UpdateArticleSchema, logger } from '@blich-studio/shared'
 import dayjs from 'dayjs'
 import type { Request, Response } from 'express'
 import { ObjectId } from 'mongodb'
 import database from '../database'
-import type { Article } from '../types'
-import { DatabaseError, NotFoundError, ValidationError } from '../types'
-import type { CreateArticleInput, UpdateArticleInput } from '../utils/validation'
-import { articleSchema, updateArticleSchema } from '../utils/validation'
 
 export class ArticleController {
   createArticle = async (
@@ -13,7 +11,27 @@ export class ArticleController {
     res: Response<{ id: string; message?: string }>
   ): Promise<void> => {
     try {
-      const data: CreateArticleInput = articleSchema.parse(req.body)
+      let data: CreateArticleInput
+      try {
+        data = CreateArticleSchema.parse(req.body)
+      } catch (validationError) {
+        const uuid = dayjs().valueOf().toString()
+        logger.error('Article creation validation error', validationError, {
+          event: {
+            action: 'create_article',
+            category: 'validation',
+            outcome: 'failure',
+          },
+          labels: {
+            id: uuid,
+          },
+        })
+        res.status(400).json({
+          message: 'Invalid article data',
+          id: uuid,
+        })
+        return
+      }
 
       const db = database.getDb()
       const article: Omit<Article, '_id'> = {
@@ -29,60 +47,192 @@ export class ArticleController {
         message: 'Article created successfully',
       })
     } catch (error) {
-      if (error instanceof Error) {
-        throw new ValidationError(error.message)
-      }
-      throw new DatabaseError('Failed to create article')
+      const uuid = dayjs().valueOf().toString()
+      logger.error('Failed to create article in db', error, {
+        event: {
+          action: 'create_article',
+          category: 'database',
+          outcome: 'failure',
+        },
+        labels: {
+          id: uuid,
+        },
+      })
+      res.status(500).json({
+        message: 'Failed to create article',
+        id: uuid,
+      })
     }
   }
 
-  getArticles = async (req: Request, res: Response<Article[]>): Promise<void> => {
+  getArticles = async (
+    req: Request,
+    res: Response<Article[] | { message: string; id: string }>
+  ): Promise<void> => {
     try {
       const db = database.getDb()
       const articles = await db.collection('articles').find({}).toArray()
 
       res.json(articles as unknown as Article[])
-    } catch (_error) {
-      throw new DatabaseError('Failed to fetch articles')
+    } catch (error) {
+      const uuid = dayjs().valueOf().toString()
+      logger.error('Failed to fetch articles from database', error, {
+        event: {
+          action: 'get_articles',
+          category: 'database',
+          outcome: 'failure',
+        },
+        labels: {
+          id: uuid,
+        },
+      })
+      res.status(500).json({
+        message: 'Failed to fetch articles',
+        id: uuid,
+      })
     }
   }
 
-  getArticleById = async (req: Request, res: Response<Article>): Promise<void> => {
+  getArticleById = async (
+    req: Request,
+    res: Response<Article | { message: string; id: string }>
+  ): Promise<void> => {
     try {
       const { id } = req.params
 
       if (!ObjectId.isValid(id)) {
-        throw new ValidationError('Invalid article ID format')
+        const uuid = dayjs().valueOf().toString()
+        logger.error('Invalid article ID format', `ID: ${id}`, {
+          event: {
+            action: 'get_article_by_id',
+            category: 'validation',
+            outcome: 'failure',
+          },
+          labels: {
+            id: uuid,
+            articleId: id,
+          },
+        })
+        res.status(400).json({
+          message: 'Invalid article ID format',
+          id: uuid,
+        })
+        return
       }
 
       const db = database.getDb()
       const article = await db.collection('articles').findOne({ _id: new ObjectId(id) })
 
       if (!article) {
-        throw new NotFoundError('Article')
+        const uuid = dayjs().valueOf().toString()
+        logger.error('Article not found', `ID: ${id}`, {
+          event: {
+            action: 'get_article_by_id',
+            category: 'not_found',
+            outcome: 'failure',
+          },
+          labels: {
+            id: uuid,
+            articleId: id,
+          },
+        })
+        res.status(404).json({
+          message: 'Article not found',
+          id: uuid,
+        })
+        return
       }
 
       res.json(article as unknown as Article)
     } catch (error) {
-      if (error instanceof ValidationError || error instanceof NotFoundError) {
-        throw error
-      }
-      throw new DatabaseError('Failed to fetch article')
+      const uuid = dayjs().valueOf().toString()
+      logger.error('Failed to fetch article from database', error, {
+        event: {
+          action: 'get_article_by_id',
+          category: 'database',
+          outcome: 'failure',
+        },
+        labels: {
+          id: uuid,
+          articleId: req.params.id,
+        },
+      })
+      res.status(500).json({
+        message: 'Failed to fetch article',
+        id: uuid,
+      })
     }
   }
 
-  updateArticle = async (req: Request, res: Response<Article>): Promise<void> => {
+  updateArticle = async (
+    req: Request,
+    res: Response<Article | { message: string; id: string }>
+  ): Promise<void> => {
     try {
       const { id } = req.params
 
       if (!ObjectId.isValid(id)) {
-        throw new ValidationError('Invalid article ID format')
+        const uuid = dayjs().valueOf().toString()
+        logger.error('Invalid article ID format', `ID: ${id}`, {
+          event: {
+            action: 'update_article',
+            category: 'validation',
+            outcome: 'failure',
+          },
+          labels: {
+            id: uuid,
+            articleId: id,
+          },
+        })
+        res.status(400).json({
+          message: 'Invalid article ID format',
+          id: uuid,
+        })
+        return
       }
 
       // Validate update data (partial validation)
-      const updateData: UpdateArticleInput = updateArticleSchema.parse(req.body)
+      let updateData: UpdateArticleInput
+      try {
+        updateData = UpdateArticleSchema.parse(req.body)
+      } catch (validationError) {
+        const uuid = dayjs().valueOf().toString()
+        logger.error('Article update validation error', validationError, {
+          event: {
+            action: 'update_article',
+            category: 'validation',
+            outcome: 'failure',
+          },
+          labels: {
+            id: uuid,
+            articleId: id,
+          },
+        })
+        res.status(400).json({
+          message: 'Invalid update data',
+          id: uuid,
+        })
+        return
+      }
+
       if (Object.keys(updateData).length === 0) {
-        throw new ValidationError('No update data provided')
+        const uuid = dayjs().valueOf().toString()
+        logger.error('No update data provided', `ID: ${id}`, {
+          event: {
+            action: 'update_article',
+            category: 'validation',
+            outcome: 'failure',
+          },
+          labels: {
+            id: uuid,
+            articleId: id,
+          },
+        })
+        res.status(400).json({
+          message: 'No update data provided',
+          id: uuid,
+        })
+        return
       }
 
       const db = database.getDb()
@@ -98,39 +248,114 @@ export class ArticleController {
       )
 
       if (!result) {
-        throw new NotFoundError('Article')
+        const uuid = dayjs().valueOf().toString()
+        logger.error('Article not found for update', `ID: ${id}`, {
+          event: {
+            action: 'update_article',
+            category: 'not_found',
+            outcome: 'failure',
+          },
+          labels: {
+            id: uuid,
+            articleId: id,
+          },
+        })
+        res.status(404).json({
+          message: 'Article not found',
+          id: uuid,
+        })
+        return
       }
 
       res.json(result as unknown as Article)
     } catch (error) {
-      if (error instanceof ValidationError || error instanceof NotFoundError) {
-        throw error
-      }
-      throw new DatabaseError('Failed to update article')
+      const uuid = dayjs().valueOf().toString()
+      logger.error('Failed to update article in database', error, {
+        event: {
+          action: 'update_article',
+          category: 'database',
+          outcome: 'failure',
+        },
+        labels: {
+          id: uuid,
+          articleId: req.params.id,
+        },
+      })
+      res.status(500).json({
+        message: 'Failed to update article',
+        id: uuid,
+      })
     }
   }
 
-  deleteArticle = async (req: Request, res: Response): Promise<void> => {
+  deleteArticle = async (
+    req: Request,
+    res: Response<{ message: string; id: string } | void>
+  ): Promise<void> => {
     try {
       const { id } = req.params
 
       if (!ObjectId.isValid(id)) {
-        throw new ValidationError('Invalid article ID format')
+        const uuid = dayjs().valueOf().toString()
+        logger.error('Invalid article ID format', `ID: ${id}`, {
+          event: {
+            action: 'delete_article',
+            category: 'validation',
+            outcome: 'failure',
+          },
+          labels: {
+            id: uuid,
+            articleId: id,
+          },
+        })
+        res.status(400).json({
+          message: 'Invalid article ID format',
+          id: uuid,
+        })
+        return
       }
 
       const db = database.getDb()
       const result = await db.collection('articles').deleteOne({ _id: new ObjectId(id) })
 
       if (result.deletedCount === 0) {
-        throw new NotFoundError('Article')
+        const uuid = dayjs().valueOf().toString()
+        logger.error('Article not found for deletion', `ID: ${id}`, {
+          event: {
+            action: 'delete_article',
+            category: 'not_found',
+            outcome: 'failure',
+          },
+          labels: {
+            id: uuid,
+            articleId: id,
+          },
+        })
+        res.status(404).json({
+          message: 'Article not found',
+          id: uuid,
+        })
+        return
       }
 
       res.status(204).send()
     } catch (error) {
-      if (error instanceof ValidationError || error instanceof NotFoundError) {
-        throw error
-      }
-      throw new DatabaseError('Failed to delete article')
+      const uuid = dayjs().valueOf().toString()
+      logger.error('Failed to delete article from database', error, {
+        event: {
+          action: 'delete_article',
+          category: 'database',
+          outcome: 'failure',
+        },
+        labels: {
+          id: uuid,
+          articleId: req.params.id,
+        },
+      })
+      res.status(500).json({
+        message: 'Failed to delete article',
+        id: uuid,
+      })
     }
   }
 }

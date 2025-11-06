@@ -1,9 +1,8 @@
-import { logger } from '@blich-studio/shared'
+import type { ApiErrorResponse } from '@blich-studio/shared'
+import { DatabaseError, logger, NotFoundError, ValidationError } from '@blich-studio/shared'
 import type { NextFunction, Request, Response } from 'express'
 import { ZodError } from 'zod'
 import { config } from '../config'
-import type { ApiErrorResponse } from '../types'
-import { DatabaseError, NotFoundError, ValidationError } from '../types'
 
 export const errorHandler = (
   error: Error,
@@ -12,7 +11,6 @@ export const errorHandler = (
   _next: NextFunction
 ): void => {
   // Log error with request context
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   logger.error(`Error in ${req.method} ${req.path}`, error, {
     event: {
       action: 'error',
