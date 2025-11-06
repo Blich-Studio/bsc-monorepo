@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
-    "cms:dev": "npm run dev --workspace=apps/cms-backend",
+    "cms:dev": "npm run dev --workspace=apps/cms-api",
     "api:dev": "npm run start:dev --workspace=apps/blich-api-gateway",
     "web:dev": "npm run dev --workspace=apps/web",
     "admin:dev": "npm run dev --workspace=apps/admin",

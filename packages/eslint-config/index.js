@@ -1,9 +1,11 @@
-import eslint from '@eslint/js';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import vuePlugin from 'eslint-plugin-vue';
-import globals from 'globals';
-import tseslint from 'typescript-eslint';
-import vueParser from 'vue-eslint-parser';
+import eslint from '@eslint/js'
+import eslintConfigPrettier from 'eslint-config-prettier'
+import eslintPluginPrettier from 'eslint-plugin-prettier'
+import vuePlugin from 'eslint-plugin-vue'
+import globals from 'globals'
+import tseslint from 'typescript-eslint'
+import vueParser from 'vue-eslint-parser'
+import prettierConfig from './prettier.config.js'
 
 const baseConfig = [
   {
@@ -18,8 +20,16 @@ const baseConfig = [
     ],
   },
   eslint.configs.recommended,
-  eslintPluginPrettierRecommended,
-];
+  eslintConfigPrettier, // Disable ESLint rules that conflict with Prettier
+  {
+    plugins: {
+      prettier: eslintPluginPrettier,
+    },
+    rules: {
+      'prettier/prettier': ['error', prettierConfig], // Use our custom Prettier config
+    },
+  },
+]
 
 const typescriptConfig = [
   {
@@ -66,9 +76,9 @@ const typescriptConfig = [
       ],
     },
   },
-];
+]
 
-export const base = (options = {}) => tseslint.config(...baseConfig, ...typescriptConfig, options);
+export const base = (options = {}) => tseslint.config(...baseConfig, ...typescriptConfig, options)
 
 export const nestjs = (options = {}) =>
   tseslint.config(
@@ -91,7 +101,7 @@ export const nestjs = (options = {}) =>
       },
     },
     options
-  );
+  )
 
 export const adonisjs = (options = {}) =>
   tseslint.config(
@@ -117,7 +127,7 @@ export const adonisjs = (options = {}) =>
       },
     },
     options
-  );
+  )
 
 export const vue = (options = {}) =>
   tseslint.config(
@@ -185,4 +195,4 @@ export const vue = (options = {}) =>
       },
     },
     options
-  );
+  )
