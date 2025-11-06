@@ -1,3 +1,4 @@
+import { logger } from '@blich-studio/shared'
 import type { NextFunction, Request, Response } from 'express'
 import { ZodError } from 'zod'
 import { config } from '../config'
@@ -11,14 +12,24 @@ export const errorHandler = (
   _next: NextFunction
 ): void => {
   // Log error with request context
-  const timestamp = new Date().toISOString()
-  console.error(`[${timestamp}] Error in ${req.method} ${req.path}:`, {
-    error: error.message,
-    stack: config.isDevelopment ? error.stack : undefined,
-    url: req.url,
-    method: req.method,
-    ip: req.ip,
-    userAgent: req.get('User-Agent'),
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  logger.error(`Error in ${req.method} ${req.path}`, error, {
+    event: {
+      action: 'error',
+      category: 'api',
+      outcome: 'failure',
+    },
+    http: {
+      request: {
+        method: req.method,
+        url: req.url,
+      },
+    },
+    labels: {
+      ip: req.ip,
+      userAgent: req.get('User-Agent'),
+      path: req.path,
+    },
   })
 
   // Handle different error types

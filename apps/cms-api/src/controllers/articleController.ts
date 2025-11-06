@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import type { Request, Response } from 'express'
 import { ObjectId } from 'mongodb'
 import database from '../database'
@@ -17,8 +18,8 @@ export class ArticleController {
       const db = database.getDb()
       const article: Omit<Article, '_id'> = {
         ...data,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: dayjs().toDate(),
+        updatedAt: dayjs().toDate(),
       }
 
       const result = await db.collection('articles').insertOne(article)
@@ -90,7 +91,7 @@ export class ArticleController {
         {
           $set: {
             ...updateData,
-            updatedAt: new Date(),
+            updatedAt: dayjs().toDate(),
           },
         },
         { returnDocument: 'after' }

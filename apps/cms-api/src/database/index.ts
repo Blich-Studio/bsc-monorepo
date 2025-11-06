@@ -1,3 +1,4 @@
+import { logger } from '@blich-studio/shared'
 import type { Db, MongoClientOptions } from 'mongodb'
 import { MongoClient } from 'mongodb'
 import { config } from '../config'
@@ -59,21 +60,51 @@ class Database {
       this.db = client.db(config.databaseName)
       this.isConnected = true
 
-      console.log(`✅ Connected to MongoDB: ${config.databaseName}`)
+      logger.info(`Connected to MongoDB: ${config.databaseName}`, {
+        event: {
+          action: 'connect',
+          category: 'database',
+          outcome: 'success',
+        },
+        labels: {
+          database: config.databaseName,
+        },
+      })
 
       // Handle connection events
       client.on('error', error => {
-        console.error('❌ MongoDB connection error:', error)
+        logger.error('MongoDB connection error', error, {
+          event: {
+            action: 'connection',
+            category: 'database',
+            outcome: 'failure',
+          },
+          labels: { database: config.databaseName },
+        })
         this.isConnected = false
       })
 
       client.on('disconnected', () => {
-        console.log('⚠️  MongoDB disconnected')
+        logger.warn('MongoDB disconnected', {
+          event: {
+            action: 'disconnection',
+            category: 'database',
+            outcome: 'unknown',
+          },
+          labels: { database: config.databaseName },
+        })
         this.isConnected = false
       })
 
       client.on('reconnected', () => {
-        console.log('✅ MongoDB reconnected')
+        logger.info('MongoDB reconnected', {
+          event: {
+            action: 'reconnection',
+            category: 'database',
+            outcome: 'success',
+          },
+          labels: { database: config.databaseName },
+        })
         this.isConnected = true
       })
 
@@ -82,7 +113,15 @@ class Database {
     } catch (error) {
       this.isConnected = false
       const message = error instanceof Error ? error.message : 'Unknown database connection error'
-      console.error('❌ Failed to connect to MongoDB:', message)
+
+      logger.error('Failed to connect to MongoDB', new Error(message), {
+        event: {
+          action: 'connect',
+          category: 'database',
+          outcome: 'failure',
+        },
+        labels: { database: config.databaseName },
+      })
       throw new DatabaseError(`Database connection failed: ${message}`)
     }
   }
@@ -100,10 +139,25 @@ class Database {
         await this.client.close()
         this.isConnected = false
         this.db = null
-        console.log('✅ Disconnected from MongoDB')
+
+        logger.info('Disconnected from MongoDB', {
+          event: {
+            action: 'disconnect',
+            category: 'database',
+            outcome: 'success',
+          },
+          labels: { database: config.databaseName },
+        })
       }
     } catch (error) {
-      console.error('❌ Error disconnecting from MongoDB:', error)
+      logger.error('Error disconnecting from MongoDB', error as Error, {
+        event: {
+          action: 'disconnect',
+          category: 'database',
+          outcome: 'failure',
+        },
+        labels: { database: config.databaseName },
+      })
       throw new DatabaseError('Failed to disconnect from database')
     }
   }
