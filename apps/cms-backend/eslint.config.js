@@ -1,7 +1,11 @@
-import { configApp } from '@adonisjs/eslint-config'
+import { adonisjs } from '@blich-studio/eslint-config';
 
-export default configApp({
-  parserOptions: {
-    tsconfigRootDir: import.meta.dirname,
+export default adonisjs({
+  ignores: ['ace.js'],
+  languageOptions: {
+    parserOptions: {
+      project: './tsconfig.json',
+      tsconfigRootDir: import.meta.dirname,
+    },
   },
-})
+});

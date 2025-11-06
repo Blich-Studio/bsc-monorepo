@@ -1,27 +1,26 @@
 <template>
   <div>
-    <h1 class="mb-6">{{ isEdit ? 'Edit Game' : 'Create Game' }}</h1>
+    <h1 class="mb-6">
+      {{ isEdit ? "Edit Game" : "Create Game" }}
+    </h1>
 
-    <form @submit.prevent="handleSubmit" class="card">
+    <form class="card" @submit.prevent="handleSubmit">
       <div class="form-group">
         <label class="form-label">Title</label>
         <input
           v-model="form.title"
-          @input="generateSlug"
           type="text"
           required
           class="form-input"
+          @input="generateSlug"
         />
       </div>
 
       <div class="form-group">
         <label class="form-label">Slug</label>
-        <input
-          v-model="form.slug"
-          type="text"
-          required
-          class="form-input"
-        />
+        <input v-model="form.slug"
+type="text" required class="form-input"
+/>
       </div>
 
       <div class="form-group">
@@ -31,12 +30,13 @@
           required
           class="form-textarea"
           rows="4"
-        ></textarea>
+        />
       </div>
 
       <div class="form-group">
         <label class="form-label">Status</label>
-        <select v-model="form.status" class="form-select">
+        <select v-model="form.status"
+class="form-select">
           <option value="in-development">In Development</option>
           <option value="early-access">Early Access</option>
           <option value="released">Released</option>
@@ -46,11 +46,12 @@
       <div class="form-group">
         <label class="form-label mb-2">Platforms</label>
         <div class="checkbox-group">
-          <label v-for="platform in availablePlatforms" :key="platform">
+          <label v-for="platform in availablePlatforms"
+:key="platform">
             <input
+              v-model="form.platforms"
               type="checkbox"
               :value="platform"
-              v-model="form.platforms"
               class="form-checkbox"
             />
             <span>{{ platform }}</span>
@@ -60,20 +61,16 @@
 
       <div class="form-group">
         <label class="form-label">Cover Image URL</label>
-        <input
-          v-model="form.coverImage"
-          type="text"
-          class="form-input"
-        />
+        <input v-model="form.coverImage"
+type="text" class="form-input"
+/>
       </div>
 
       <div class="form-group">
         <label class="form-label">Trailer URL</label>
-        <input
-          v-model="form.trailerUrl"
-          type="text"
-          class="form-input"
-        />
+        <input v-model="form.trailerUrl"
+type="text" class="form-input"
+/>
       </div>
 
       <div class="form-group">
@@ -83,7 +80,8 @@
             type="checkbox"
             class="form-checkbox"
           />
-          <span class="form-label" style="margin-bottom: 0;">Published</span>
+          <span class="form-label"
+style="margin-bottom: 0">Published</span>
         </label>
       </div>
 
@@ -93,9 +91,10 @@
           :disabled="gamesStore.loading"
           class="btn btn-primary"
         >
-          {{ gamesStore.loading ? 'Saving...' : 'Save Game' }}
+          {{ gamesStore.loading ? "Saving..." : "Save Game" }}
         </button>
-        <router-link to="/games" class="btn btn-secondary">
+        <router-link to="/games"
+class="btn btn-secondary">
           Cancel
         </router-link>
       </div>
@@ -104,9 +103,9 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, onMounted, computed } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useGamesStore, type Game } from '@/stores/games';
+import { reactive, onMounted, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useGamesStore, type Game } from "@/stores/games";
 
 const route = useRoute();
 const router = useRouter();
@@ -114,13 +113,20 @@ const gamesStore = useGamesStore();
 
 const isEdit = computed(() => !!route.params.id);
 
-const availablePlatforms = ['PC', 'Steam', 'PlayStation', 'Xbox', 'Nintendo Switch', 'Mobile'];
+const availablePlatforms = [
+  "PC",
+  "Steam",
+  "PlayStation",
+  "Xbox",
+  "Nintendo Switch",
+  "Mobile",
+];
 
 const form = reactive<Game>({
-  title: '',
-  slug: '',
-  description: '',
-  status: 'in-development',
+  title: "",
+  slug: "",
+  description: "",
+  status: "in-development",
   platforms: [],
   published: false,
 });
@@ -139,8 +145,8 @@ const generateSlug = () => {
   if (!isEdit.value) {
     form.slug = form.title
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
   }
 };
 
@@ -151,9 +157,9 @@ const handleSubmit = async () => {
     } else {
       await gamesStore.createGame(form);
     }
-    router.push('/games');
+    router.push("/games");
   } catch (error) {
-    console.error('Failed to save game:', error);
+    console.error("Failed to save game:", error);
   }
 };
 </script>

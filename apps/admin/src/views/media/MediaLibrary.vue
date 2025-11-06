@@ -2,7 +2,7 @@
   <div class="media-library">
     <div class="library-header">
       <h1>Media Library</h1>
-      <button @click="openUploadModal" class="upload-button">
+      <button class="upload-button" @click="openUploadModal">
         Upload Media
       </button>
     </div>
@@ -10,7 +10,8 @@
     <div class="filters">
       <div class="filter-group">
         <label for="type">Type:</label>
-        <select id="type" v-model="filterType" @change="applyFilters">
+        <select id="type"
+v-model="filterType" @change="applyFilters">
           <option value="">All</option>
           <option value="image">Images</option>
           <option value="video">Videos</option>
@@ -21,23 +22,27 @@
       <div class="search-group">
         <input
           v-model="searchQuery"
-          @input="applyFilters"
           type="text"
           placeholder="Search media..."
           class="search-input"
+          @input="applyFilters"
         />
       </div>
     </div>
 
-    <div v-if="loading" class="loading">
-      Loading media...
-    </div>
+    <div v-if="loading"
+class="loading"
+>
+Loading media...
+</div>
 
-    <div v-else-if="filteredMedia.length === 0" class="empty-state">
+    <div v-else-if="filteredMedia.length === 0"
+class="empty-state">
       <p>No media found.</p>
     </div>
 
-    <div v-else class="media-grid">
+    <div v-else
+class="media-grid">
       <div
         v-for="item in filteredMedia"
         :key="item.id"
@@ -51,38 +56,59 @@
             :alt="item.name"
             class="media-image"
           />
-          <div v-else class="media-icon">
+          <div v-else
+class="media-icon">
             <FileText v-if="item.type === 'document'" />
             <Video v-else />
           </div>
         </div>
         <div class="media-info">
-          <p class="media-name">{{ item.name }}</p>
-          <p class="media-size">{{ formatFileSize(item.size) }}</p>
+          <p class="media-name">
+            {{ item.name }}
+          </p>
+          <p class="media-size">
+            {{ formatFileSize(item.size) }}
+          </p>
         </div>
       </div>
     </div>
 
     <!-- Upload Modal -->
-    <div v-if="showUploadModal" class="modal-overlay" @click="closeUploadModal">
-      <div class="modal-content" @click.stop>
+    <div v-if="showUploadModal"
+class="modal-overlay" @click="closeUploadModal">
+      <div class="modal-content"
+@click.stop>
         <h2>Upload Media</h2>
-        <div class="upload-area" @drop="handleDrop" @dragover.prevent>
+        <div class="upload-area"
+@drop="handleDrop" @dragover.prevent>
           <input
             ref="fileInput"
             type="file"
             multiple
-            @change="handleFileSelect"
             class="file-input"
+            @change="handleFileSelect"
           />
           <div class="upload-prompt">
             <Upload class="upload-icon" />
-            <p>Drag & drop files here or <button @click="triggerFileInput" class="link-button">browse</button></p>
+            <p>
+              Drag & drop files here or
+              <button
+class="link-button" @click="triggerFileInput"
+>
+                browse
+              </button>
+            </p>
           </div>
         </div>
         <div class="modal-actions">
-          <button @click="closeUploadModal" class="cancel-button">Cancel</button>
-          <button @click="uploadFiles" :disabled="!selectedFiles.length" class="upload-button">
+          <button class="cancel-button" @click="closeUploadModal">
+            Cancel
+          </button>
+          <button
+            :disabled="!selectedFiles.length"
+            class="upload-button"
+            @click="uploadFiles"
+          >
             Upload {{ selectedFiles.length }} file(s)
           </button>
         </div>
@@ -92,92 +118,93 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { FileText, Video, Upload } from 'lucide-vue-next'
+import { ref, computed, onMounted } from "vue";
+import { FileText, Video, Upload } from "lucide-vue-next";
 
 interface MediaItem {
-  id: number
-  name: string
-  url: string
-  type: 'image' | 'video' | 'document'
-  size: number
-  uploadedAt: string
+  id: number;
+  name: string;
+  url: string;
+  type: "image" | "video" | "document";
+  size: number;
+  uploadedAt: string;
 }
 
-const media = ref<MediaItem[]>([])
-const loading = ref(false)
-const filterType = ref('')
-const searchQuery = ref('')
-const showUploadModal = ref(false)
-const selectedFiles = ref<File[]>([])
-const fileInput = ref<HTMLInputElement>()
+const media = ref<MediaItem[]>([]);
+const loading = ref(false);
+const filterType = ref("");
+const searchQuery = ref("");
+const showUploadModal = ref(false);
+const selectedFiles = ref<File[]>([]);
+const fileInput = ref<HTMLInputElement>();
 
 const filteredMedia = computed(() => {
-  return media.value.filter(item => {
-    const matchesType = !filterType.value || item.type === filterType.value
-    const matchesSearch = !searchQuery.value ||
-      item.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-    return matchesType && matchesSearch
-  })
-})
+  return media.value.filter((item) => {
+    const matchesType = !filterType.value || item.type === filterType.value;
+    const matchesSearch =
+      !searchQuery.value ||
+      item.name.toLowerCase().includes(searchQuery.value.toLowerCase());
+    return matchesType && matchesSearch;
+  });
+});
 
 const applyFilters = () => {
   // Filters are applied reactively through computed property
-}
+};
 
 const selectMedia = (item: MediaItem) => {
   // TODO: Handle media selection (e.g., for inserting into content)
-  console.log('Selected media:', item)
-}
+  console.log("Selected media:", item);
+};
 
 const openUploadModal = () => {
-  showUploadModal.value = true
-  selectedFiles.value = []
-}
+  showUploadModal.value = true;
+  selectedFiles.value = [];
+};
 
 const closeUploadModal = () => {
-  showUploadModal.value = false
-  selectedFiles.value = []
-}
+  showUploadModal.value = false;
+  selectedFiles.value = [];
+};
 
 const triggerFileInput = () => {
-  fileInput.value?.click()
-}
+  fileInput.value?.click();
+};
 
 const handleFileSelect = (event: Event) => {
-  const target = event.target as HTMLInputElement
+  const target = event.target as HTMLInputElement;
   if (target.files) {
-    selectedFiles.value = Array.from(target.files)
+    selectedFiles.value = Array.from(target.files);
   }
-}
+};
 
 const handleDrop = (event: DragEvent) => {
-  event.preventDefault()
+  event.preventDefault();
   if (event.dataTransfer?.files) {
-    selectedFiles.value = Array.from(event.dataTransfer.files)
+    selectedFiles.value = Array.from(event.dataTransfer.files);
   }
-}
+};
 
 const uploadFiles = async () => {
-  if (!selectedFiles.value.length) return
+  if (!selectedFiles.value.length) return;
 
   try {
     // TODO: Implement file upload
-    console.log('Uploading files:', selectedFiles.value)
-    closeUploadModal()
+    console.log("Uploading files:", selectedFiles.value);
+    closeUploadModal();
     // Refresh media list after upload
   } catch (error) {
-    console.error('Upload failed:', error)
+    console.error("Upload failed:", error);
   }
-}
+};
 
 const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
+  if (bytes === 0) return "0 Bytes";
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+};
 
 onMounted(() => {
   // TODO: Load media from API
@@ -185,22 +212,22 @@ onMounted(() => {
   media.value = [
     {
       id: 1,
-      name: 'hero-image.jpg',
-      url: '/uploads/hero-image.jpg',
-      type: 'image',
+      name: "hero-image.jpg",
+      url: "/uploads/hero-image.jpg",
+      type: "image",
       size: 245760,
-      uploadedAt: '2024-01-15'
+      uploadedAt: "2024-01-15",
     },
     {
       id: 2,
-      name: 'gameplay.mp4',
-      url: '/uploads/gameplay.mp4',
-      type: 'video',
+      name: "gameplay.mp4",
+      url: "/uploads/gameplay.mp4",
+      type: "video",
       size: 5242880,
-      uploadedAt: '2024-01-14'
-    }
-  ]
-})
+      uploadedAt: "2024-01-14",
+    },
+  ];
+});
 </script>
 
 <style scoped>
@@ -308,7 +335,8 @@ onMounted(() => {
   color: #6b7280;
 }
 
-.loading, .empty-state {
+.loading,
+.empty-state {
   text-align: center;
   padding: 3rem;
   color: #6b7280;

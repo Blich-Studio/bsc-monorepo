@@ -1,13 +1,13 @@
 <template>
   <div class="blog-editor">
     <div class="editor-header">
-      <h1>{{ isEditing ? 'Edit Blog Post' : 'Create Blog Post' }}</h1>
-      <button @click="savePost" class="save-button" :disabled="!isValid">
-        {{ isEditing ? 'Update' : 'Publish' }}
+      <h1>{{ isEditing ? "Edit Blog Post" : "Create Blog Post" }}</h1>
+      <button class="save-button" @click="savePost" :disabled="!isValid">
+        {{ isEditing ? "Update" : "Publish" }}
       </button>
     </div>
 
-    <form @submit.prevent="savePost" class="editor-form">
+    <form class="editor-form" @submit.prevent="savePost">
       <div class="form-group">
         <label for="title">Title</label>
         <input
@@ -37,7 +37,7 @@
           v-model="form.excerpt"
           rows="3"
           class="form-textarea"
-        ></textarea>
+        />
       </div>
 
       <div class="form-group">
@@ -52,7 +52,8 @@
 
       <div class="form-group">
         <label for="status">Status</label>
-        <select id="status" v-model="form.status" class="form-select">
+        <select id="status"
+v-model="form.status" class="form-select">
           <option value="draft">Draft</option>
           <option value="published">Published</option>
         </select>
@@ -72,54 +73,54 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useBlogStore, type BlogPost } from '@/stores/blog'
-import { QuillEditor } from '@vueup/vue-quill'
-import '@vueup/vue-quill/dist/vue-quill.snow.css'
+import { ref, computed, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useBlogStore, type BlogPost } from "@/stores/blog";
+import { QuillEditor } from "@vueup/vue-quill";
+import "@vueup/vue-quill/dist/vue-quill.snow.css";
 
-const route = useRoute()
-const router = useRouter()
-const blogStore = useBlogStore()
+const route = useRoute();
+const router = useRouter();
+const blogStore = useBlogStore();
 
-const isEditing = computed(() => !!route.params.id)
+const isEditing = computed(() => !!route.params.id);
 
 const form = ref<BlogPost>({
-  title: '',
-  slug: '',
-  excerpt: '',
-  content: '',
-  status: 'draft' as 'draft' | 'published',
-  publishedAt: ''
-})
+  title: "",
+  slug: "",
+  excerpt: "",
+  content: "",
+  status: "draft" as "draft" | "published",
+  publishedAt: "",
+});
 
 const isValid = computed(() => {
-  return form.value.title.trim() && form.value.slug.trim()
-})
+  return form.value.title.trim() && form.value.slug.trim();
+});
 
 const savePost = async () => {
-  if (!isValid.value) return
+  if (!isValid.value) return;
 
   try {
     if (isEditing.value) {
-      await blogStore.updatePost(Number(route.params.id), form.value)
+      await blogStore.updatePost(Number(route.params.id), form.value);
     } else {
-      await blogStore.createPost(form.value)
+      await blogStore.createPost(form.value);
     }
-    router.push('/blog')
+    router.push("/blog");
   } catch (error) {
-    console.error('Failed to save post:', error)
+    console.error("Failed to save post:", error);
   }
-}
+};
 
 onMounted(() => {
   if (isEditing.value) {
-    const post = blogStore.posts.find(p => p.id === Number(route.params.id))
+    const post = blogStore.posts.find((p) => p.id === Number(route.params.id));
     if (post) {
-      form.value = { ...post }
+      form.value = { ...post };
     }
   }
-})
+});
 </script>
 
 <style scoped>
