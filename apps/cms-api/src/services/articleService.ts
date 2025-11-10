@@ -2,27 +2,38 @@ import type { Article, CreateArticleInput, UpdateArticleInput } from '@blich-stu
 import {
   CreateArticleSchema,
   DatabaseError,
+  getCurrentTimestamp,
+  isValidObjectId,
+  logger,
   NotFoundError,
   UpdateArticleSchema,
   ValidationError,
-  isValidObjectId,
-  logger,
 } from '@blich-studio/shared'
-import dayjs from 'dayjs'
 import { ObjectId } from 'mongodb'
+import { ZodError } from 'zod'
 import database from '../database'
 
 export class ArticleService {
   async createArticle(data: CreateArticleInput): Promise<{ id: string }> {
     try {
       // Validate input data
-      const validatedData = CreateArticleSchema.parse(data)
+      let validatedData: CreateArticleInput
+      try {
+        validatedData = CreateArticleSchema.parse(data)
+      } catch (error) {
+        if (error instanceof ZodError) {
+          throw new ValidationError(
+            `Validation failed: ${error.errors.map(e => e.message).join(', ')}`
+          )
+        }
+        throw error
+      }
 
       const db = database.getDb()
       const article: Omit<Article, '_id'> = {
         ...validatedData,
-        createdAt: dayjs().valueOf(),
-        updatedAt: dayjs().valueOf(),
+        createdAt: getCurrentTimestamp(),
+        updatedAt: getCurrentTimestamp(),
       }
 
       const result = await db.collection('articles').insertOne(article)
@@ -50,6 +61,14 @@ export class ArticleService {
 
       return articles as unknown as Article[]
     } catch (error) {
+      if (
+        error instanceof ValidationError ||
+        error instanceof NotFoundError ||
+        error instanceof DatabaseError
+      ) {
+        throw error
+      }
+
       logger.error('Failed to fetch articles', error)
       throw new DatabaseError('Failed to fetch articles')
     }
@@ -75,6 +94,14 @@ export class ArticleService {
 
       return article as unknown as Article
     } catch (error) {
+      if (
+        error instanceof ValidationError ||
+        error instanceof NotFoundError ||
+        error instanceof DatabaseError
+      ) {
+        throw error
+      }
+
       logger.error(`Failed to fetch article: ${id}`, error)
       throw new DatabaseError('Failed to fetch article')
     }
@@ -89,7 +116,17 @@ export class ArticleService {
       }
 
       // Validate update data
-      const validatedData = UpdateArticleSchema.parse(data)
+      let validatedData: UpdateArticleInput
+      try {
+        validatedData = UpdateArticleSchema.parse(data)
+      } catch (error) {
+        if (error instanceof ZodError) {
+          throw new ValidationError(
+            `Validation failed: ${error.errors.map(e => e.message).join(', ')}`
+          )
+        }
+        throw error
+      }
 
       // Check if update data is empty
       if (Object.keys(validatedData).length === 0) {
@@ -103,7 +140,7 @@ export class ArticleService {
         {
           $set: {
             ...validatedData,
-            updatedAt: dayjs().valueOf(),
+            updatedAt: getCurrentTimestamp(),
           },
         },
         { returnDocument: 'after' }
@@ -118,6 +155,14 @@ export class ArticleService {
 
       return result as unknown as Article
     } catch (error) {
+      if (
+        error instanceof ValidationError ||
+        error instanceof NotFoundError ||
+        error instanceof DatabaseError
+      ) {
+        throw error
+      }
+
       logger.error(`Failed to update article: ${id}`, error)
       throw new DatabaseError('Failed to update article')
     }
@@ -141,6 +186,14 @@ export class ArticleService {
 
       logger.info(`Article deleted: ${id}`)
     } catch (error) {
+      if (
+        error instanceof ValidationError ||
+        error instanceof NotFoundError ||
+        error instanceof DatabaseError
+      ) {
+        throw error
+      }
+
       logger.error(`Failed to delete article: ${id}`, error)
       throw new DatabaseError('Failed to delete article')
     }

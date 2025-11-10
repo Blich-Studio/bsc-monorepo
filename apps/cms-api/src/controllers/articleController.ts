@@ -1,6 +1,5 @@
 import type { Article } from '@blich-studio/shared'
 import { generateId, logger, NotFoundError, ValidationError } from '@blich-studio/shared'
-import dayjs from 'dayjs'
 import type { Request, Response } from 'express'
 import { articleService } from '../services/articleService'
 
@@ -46,7 +45,7 @@ export class ArticleController {
       const articles = await articleService.getArticles()
       res.json(articles)
     } catch (error) {
-      const uuid = dayjs().valueOf().toString()
+      const uuid = generateId()
       logger.error('Failed to fetch articles', error, { labels: { id: uuid } })
       res.status(500).json({
         message: 'Failed to fetch articles',
@@ -64,7 +63,7 @@ export class ArticleController {
       const article = await articleService.getArticleById(id)
       res.json(article)
     } catch (error) {
-      const uuid = dayjs().valueOf().toString()
+      const uuid = generateId()
 
       if (error instanceof ValidationError) {
         logger.error('Invalid article ID format', undefined, { labels: { id: uuid } })
@@ -111,7 +110,7 @@ export class ArticleController {
       const article = await articleService.updateArticle(id, req.body) // eslint-disable-line @typescript-eslint/no-unsafe-argument
       res.json(article)
     } catch (error) {
-      const uuid = dayjs().valueOf().toString()
+      const uuid = generateId()
 
       if (error instanceof ValidationError) {
         logger.error('Article update validation error', undefined, { labels: { id: uuid } })
@@ -148,7 +147,7 @@ export class ArticleController {
       await articleService.deleteArticle(id)
       res.status(204).send()
     } catch (error) {
-      const uuid = dayjs().valueOf().toString()
+      const uuid = generateId()
 
       if (error instanceof ValidationError) {
         logger.error('Invalid article ID format', undefined, { labels: { id: uuid } })
