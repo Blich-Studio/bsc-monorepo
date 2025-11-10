@@ -17,23 +17,7 @@ export const ensureDatabaseConnection = async (
     await database.ensureConnection()
     next()
   } catch (error) {
-    logger.error('Database connection middleware error', error, {
-      event: {
-        action: 'database_connection',
-        category: 'middleware',
-        outcome: 'failure',
-      },
-      http: {
-        request: {
-          method: req.method,
-          url: req.url,
-        },
-      },
-      labels: {
-        ip: req.ip,
-        path: req.path,
-      },
-    })
+    logger.error('Database connection middleware error', error)
     res.status(503).json({
       error: 'Database connection failed',
       message: 'Service temporarily unavailable',

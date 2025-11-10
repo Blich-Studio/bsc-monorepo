@@ -46,34 +46,16 @@ app.use(errorHandler)
 
 // Graceful shutdown
 const gracefulShutdown = (signal: string) => {
-  logger.info(`Received ${signal}, shutting down gracefully...`, {
-    event: {
-      action: 'shutdown',
-      category: 'system',
-    },
-    labels: { signal },
-  })
+  logger.info(`Received ${signal}, shutting down gracefully...`)
 
   database
     .disconnect()
     .then(() => {
-      logger.info('Graceful shutdown completed', {
-        event: {
-          action: 'shutdown',
-          category: 'system',
-          outcome: 'success',
-        },
-      })
+      logger.info('Graceful shutdown completed')
       process.exit(0)
     })
     .catch(error => {
-      logger.error('Error during shutdown', error, {
-        event: {
-          action: 'shutdown',
-          category: 'system',
-          outcome: 'failure',
-        },
-      })
+      logger.error('Error during shutdown', error)
       process.exit(1)
     })
 }
@@ -87,29 +69,12 @@ process.on('SIGTERM', () => {
 
 // Handle uncaught exceptions
 process.on('uncaughtException', error => {
-  logger.fatal('Uncaught Exception', error, {
-    event: {
-      action: 'exception',
-      category: 'system',
-      outcome: 'failure',
-    },
-  })
+  logger.fatal('Uncaught Exception', error)
   process.exit(1)
 })
 
 process.on('unhandledRejection', (reason, _promise) => {
-  logger.fatal(
-    'Unhandled Rejection',
-    reason instanceof Error ? reason : new Error(String(reason)),
-    {
-      event: {
-        action: 'rejection',
-        category: 'system',
-        outcome: 'failure',
-      },
-      labels: { promise: 'UnhandledPromise' },
-    }
-  )
+  logger.fatal('Unhandled Rejection', reason instanceof Error ? reason : new Error(String(reason)))
   process.exit(1)
 })
 
@@ -119,33 +84,9 @@ async function startServer(): Promise<void> {
     await database.connect()
 
     app.listen(config.port, () => {
-      logger.info(`CMS API running on http://localhost:${config.port}`, {
-        event: {
-          action: 'startup',
-          category: 'system',
-          outcome: 'success',
-        },
-        labels: {
-          port: config.port,
-          environment: config.nodeEnv,
-        },
-      })
-      logger.info(`Environment: ${config.nodeEnv}`, {
-        event: {
-          action: 'startup',
-          category: 'system',
-        },
-        labels: { environment: config.nodeEnv },
-      })
-      logger.info(`Health check: http://localhost:${config.port}/health`, {
-        event: {
-          action: 'startup',
-          category: 'system',
-        },
-        labels: {
-          healthCheckUrl: `http://localhost:${config.port}/health`,
-        },
-      })
+      logger.info(`CMS API running on http://localhost:${config.port}`)
+      logger.info(`Environment: ${config.nodeEnv}`)
+      logger.info(`Health check: http://localhost:${config.port}/health`)
     })
   } catch (error) {
     logger.fatal('Failed to start server', error as Error, {
@@ -160,12 +101,6 @@ async function startServer(): Promise<void> {
 }
 
 startServer().catch(error => {
-  logger.fatal('Failed to start server', error as Error, {
-    event: {
-      action: 'startup',
-      category: 'system',
-      outcome: 'failure',
-    },
-  })
+  logger.fatal('Failed to start server', error as Error)
   process.exit(1)
 })

@@ -59,51 +59,21 @@ class Database {
       this.db = client.db(config.databaseName)
       this.isConnected = true
 
-      logger.info(`Connected to MongoDB: ${config.databaseName}`, {
-        event: {
-          action: 'connect',
-          category: 'database',
-          outcome: 'success',
-        },
-        labels: {
-          database: config.databaseName,
-        },
-      })
+      logger.info(`Connected to MongoDB: ${config.databaseName}`)
 
       // Handle connection events
       client.on('error', error => {
-        logger.error('MongoDB connection error', error, {
-          event: {
-            action: 'connection',
-            category: 'database',
-            outcome: 'failure',
-          },
-          labels: { database: config.databaseName },
-        })
+        logger.error('MongoDB connection error', error)
         this.isConnected = false
       })
 
       client.on('disconnected', () => {
-        logger.warn('MongoDB disconnected', {
-          event: {
-            action: 'disconnection',
-            category: 'database',
-            outcome: 'unknown',
-          },
-          labels: { database: config.databaseName },
-        })
+        logger.warn('MongoDB disconnected')
         this.isConnected = false
       })
 
       client.on('reconnected', () => {
-        logger.info('MongoDB reconnected', {
-          event: {
-            action: 'reconnection',
-            category: 'database',
-            outcome: 'success',
-          },
-          labels: { database: config.databaseName },
-        })
+        logger.info('MongoDB reconnected')
         this.isConnected = true
       })
 
@@ -113,14 +83,7 @@ class Database {
       this.isConnected = false
       const message = error instanceof Error ? error.message : 'Unknown database connection error'
 
-      logger.error('Failed to connect to MongoDB', new Error(message), {
-        event: {
-          action: 'connect',
-          category: 'database',
-          outcome: 'failure',
-        },
-        labels: { database: config.databaseName },
-      })
+      logger.error(`Failed to connect to MongoDB: ${message}`)
       throw new DatabaseError(`Database connection failed: ${message}`)
     }
   }
@@ -139,24 +102,10 @@ class Database {
         this.isConnected = false
         this.db = null
 
-        logger.info('Disconnected from MongoDB', {
-          event: {
-            action: 'disconnect',
-            category: 'database',
-            outcome: 'success',
-          },
-          labels: { database: config.databaseName },
-        })
+        logger.info('Disconnected from MongoDB')
       }
     } catch (error) {
-      logger.error('Error disconnecting from MongoDB', error as Error, {
-        event: {
-          action: 'disconnect',
-          category: 'database',
-          outcome: 'failure',
-        },
-        labels: { database: config.databaseName },
-      })
+      logger.error('Error disconnecting from MongoDB', error as Error)
       throw new DatabaseError('Failed to disconnect from database')
     }
   }
