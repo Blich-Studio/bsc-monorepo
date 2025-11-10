@@ -1,4 +1,3 @@
-import dayjs from 'dayjs'
 import { Router } from 'express'
 import articleRoutes from './articleRoutes'
 
@@ -11,7 +10,7 @@ router.use('/articles', articleRoutes)
 router.get('/health', (req, res) => {
   res.json({
     message: 'CMS API is healthy',
-    timestamp: dayjs().toISOString(),
+    timestamp: new Date().toISOString(),
   })
 })
 

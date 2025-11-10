@@ -1,6 +1,7 @@
 {
   "name": "blich-studio-monorepo",
   "private": true,
+  "packageManager": "npm@10.2.3",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -16,7 +17,7 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
-    "turbo": "^1.13.0"
+    "turbo": "^2.6.0"
   },
   "dependencies": {
     "vue-router": "^4.6.3"

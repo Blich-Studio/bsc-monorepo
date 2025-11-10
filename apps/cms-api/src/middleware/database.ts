@@ -1,5 +1,4 @@
 import { logger } from '@blich-studio/shared'
-import dayjs from 'dayjs'
 import type { NextFunction, Request, Response } from 'express'
 import { database } from '../database'
 
@@ -17,23 +16,7 @@ export const ensureDatabaseConnection = async (
     await database.ensureConnection()
     next()
   } catch (error) {
-    logger.error('Database connection middleware error', error, {
-      event: {
-        action: 'database_connection',
-        category: 'middleware',
-        outcome: 'failure',
-      },
-      http: {
-        request: {
-          method: req.method,
-          url: req.url,
-        },
-      },
-      labels: {
-        ip: req.ip,
-        path: req.path,
-      },
-    })
+    logger.error('Database connection middleware error', error)
     res.status(503).json({
       error: 'Database connection failed',
       message: 'Service temporarily unavailable',
@@ -56,7 +39,7 @@ export const databaseHealthCheck = async (req: Request, res: Response): Promise<
           connected: true,
           status: 'healthy',
         },
-        timestamp: dayjs().toISOString(),
+        timestamp: new Date().toISOString(),
       })
     } else {
       res.status(503).json({
@@ -66,7 +49,7 @@ export const databaseHealthCheck = async (req: Request, res: Response): Promise<
           connected: false,
           status: 'unhealthy',
         },
-        timestamp: dayjs().toISOString(),
+        timestamp: new Date().toISOString(),
       })
     }
   } catch (error) {
@@ -77,7 +60,7 @@ export const databaseHealthCheck = async (req: Request, res: Response): Promise<
         connected: false,
         status: 'error',
       },
-      timestamp: dayjs().toISOString(),
+      timestamp: new Date().toISOString(),
       error: error instanceof Error ? error.message : 'Unknown error',
     })
   }
