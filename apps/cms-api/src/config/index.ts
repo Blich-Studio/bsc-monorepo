@@ -13,8 +13,6 @@ const envSchema = z.object({
 // Load and validate environment variables
 dotenv.config()
 
-const env = envSchema.parse(process.env)
-
 // Configuration interface
 export interface Config {
   port: number
@@ -28,15 +26,19 @@ export interface Config {
 }
 
 // Create typed configuration object
-export const config: Config = {
-  port: env.PORT,
-  mongoUrl: env.MONGO_URL,
-  databaseName: env.DATABASE_NAME,
-  nodeEnv: env.NODE_ENV,
-  corsOrigins: env.CORS_ORIGINS.split(',').map(origin => origin.trim()),
-  isDevelopment: env.NODE_ENV === 'development',
-  isProduction: env.NODE_ENV === 'production',
-  isTest: env.NODE_ENV === 'test',
+export const getConfig = (): Config => {
+  const parsed = envSchema.parse(process.env)
+  return {
+    port: parsed.PORT,
+    mongoUrl: parsed.MONGO_URL,
+    databaseName: parsed.DATABASE_NAME,
+    nodeEnv: parsed.NODE_ENV,
+    corsOrigins: parsed.CORS_ORIGINS.split(',').map(s => s.trim()),
+    isDevelopment: parsed.NODE_ENV === 'development',
+    isProduction: parsed.NODE_ENV === 'production',
+    isTest: parsed.NODE_ENV === 'test',
+  }
 }
 
+export const config = getConfig()
 export default config

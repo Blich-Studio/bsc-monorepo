@@ -35,11 +35,17 @@ export const ArticlePaginationSchema = z.object({
   page: z
     .string()
     .optional()
-    .transform(val => (val ? parseInt(val, 10) : undefined)),
+    .transform(val => (val ? parseInt(val, 10) : undefined))
+    .refine(val => val === undefined || !isNaN(val), {
+      message: 'Invalid page number',
+    }),
   limit: z
     .string()
     .optional()
-    .transform(val => (val ? parseInt(val, 10) : undefined)),
+    .transform(val => (val ? parseInt(val, 10) : undefined))
+    .refine(val => val === undefined || !isNaN(val), {
+      message: 'Invalid limit number',
+    }),
   sort: z.string().optional(),
   order: z.enum(['asc', 'desc']).optional().default('desc'),
 })
@@ -52,7 +58,11 @@ export const ArticleFiltersSchema = z.object({
     .optional()
     .transform(val => {
       if (!val) return undefined
-      return Array.isArray(val) ? val : [val]
+      if (Array.isArray(val)) return val
+      return val
+        .split(',')
+        .map(s => s.trim())
+        .filter(s => s.length > 0)
     }),
   search: z.string().optional(),
 })
