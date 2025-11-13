@@ -192,4 +192,4 @@ The application listens on the port specified in `PORT` environment variable (de
 
 ## License
 
-MIT License - see the [LICENSE](../LICENSE) file for details.
+MIT License - see the [LICENSE](../../LICENSE) file for details.
