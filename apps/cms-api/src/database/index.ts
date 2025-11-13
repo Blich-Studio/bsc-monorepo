@@ -1,7 +1,7 @@
 import { DatabaseError, logger } from '@blich-studio/shared'
 import type { Db, MongoClientOptions } from 'mongodb'
 import { MongoClient } from 'mongodb'
-import { config } from '../config'
+import { getConfig } from '../config'
 
 class Database {
   private client: MongoClient | null = null
@@ -27,7 +27,7 @@ class Database {
       retryReads: true, // Enable retryable reads
     }
 
-    this.client = new MongoClient(config.mongoUrl, options)
+    this.client = new MongoClient(getConfig().mongoUrl, options)
     return this.client
   }
 
@@ -56,10 +56,10 @@ class Database {
     try {
       const client = this.createClient()
       await client.connect()
-      this.db = client.db(config.databaseName)
+      this.db = client.db(getConfig().databaseName)
       this.isConnected = true
 
-      logger.info(`Connected to MongoDB: ${config.databaseName}`)
+      logger.info(`Connected to MongoDB: ${getConfig().databaseName}`)
 
       // Handle connection events
       client.on('error', error => {
