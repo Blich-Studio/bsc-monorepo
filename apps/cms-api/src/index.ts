@@ -1,6 +1,7 @@
 import { logger } from '@blich-studio/shared'
 import cors from 'cors'
 import express from 'express'
+import rateLimit from 'express-rate-limit'
 import helmet from 'helmet'
 import { config } from './config'
 import database from './database'
@@ -33,6 +34,39 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 )
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: {
+    error: 'Too many requests from this IP, please try again later.',
+  },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+})
+
+// Stricter rate limiting for write operations
+const writeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // Limit each IP to 20 write requests per windowMs
+  message: {
+    error: 'Too many write requests from this IP, please try again later.',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+})
+
+// Apply general rate limiting to all API routes
+app.use('/api/v1/cms', limiter)
+
+// Apply stricter rate limiting to write operations
+app.use('/api/v1/cms', (req, res, next) => {
+  if (['POST', 'PUT', 'DELETE'].includes(req.method)) {
+    return writeLimiter(req, res, next)
+  }
+  next()
+})
 
 // API routes
 app.use('/api/v1/cms', ensureDatabaseConnection, routes)

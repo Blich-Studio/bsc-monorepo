@@ -1,5 +1,12 @@
 import type { Article } from '@blich-studio/shared'
-import { generateId, logger, NotFoundError, ValidationError } from '@blich-studio/shared'
+import {
+  ArticleFiltersSchema,
+  ArticlePaginationSchema,
+  generateId,
+  logger,
+  NotFoundError,
+  ValidationError,
+} from '@blich-studio/shared'
 import type { Request, Response } from 'express'
 import { articleService } from '../services/articleService'
 
@@ -9,6 +16,17 @@ export class ArticleController {
     res: Response<{ id: string; message?: string }>
   ): Promise<void> => {
     try {
+      const idempotencyKey = req.get('Idempotency-Key')
+
+      // Check for idempotency key
+      if (idempotencyKey) {
+        // In a real implementation, you'd check a cache/database for the key
+        // For now, we'll just log it
+        logger.info('Idempotency key provided', {
+          labels: { idempotencyKey },
+        })
+      }
+
       const result = await articleService.createArticle(req.body) // eslint-disable-line @typescript-eslint/no-unsafe-argument
 
       res.status(201).json({
@@ -37,13 +55,33 @@ export class ArticleController {
     }
   }
 
-  getArticles = async (
-    req: Request,
-    res: Response<Article[] | { message: string; id: string }>
-  ): Promise<void> => {
+  getArticles = async (req: Request, res: Response): Promise<void> => {
     try {
-      const articles = await articleService.getArticles()
-      res.json(articles)
+      // Validate and parse query parameters
+      const paginationResult = ArticlePaginationSchema.safeParse(req.query)
+      const filtersResult = ArticleFiltersSchema.safeParse(req.query)
+
+      if (!paginationResult.success) {
+        res.status(400).json({
+          error: 'Invalid pagination parameters',
+          details: paginationResult.error.errors,
+        })
+        return
+      }
+
+      if (!filtersResult.success) {
+        res.status(400).json({
+          error: 'Invalid filter parameters',
+          details: filtersResult.error.errors,
+        })
+        return
+      }
+
+      const pagination = paginationResult.data
+      const filters = filtersResult.data
+
+      const result = await articleService.getArticles(pagination, filters)
+      res.json(result)
     } catch (error) {
       const uuid = generateId()
       logger.error('Failed to fetch articles', error, { labels: { id: uuid } })

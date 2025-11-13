@@ -1,4 +1,11 @@
-import type { Article, CreateArticleInput, UpdateArticleInput } from '@blich-studio/shared'
+import type {
+  Article,
+  ArticleFilters,
+  CreateArticleInput,
+  PaginatedResponse,
+  PaginationQuery,
+  UpdateArticleInput,
+} from '@blich-studio/shared'
 import {
   CreateArticleSchema,
   DatabaseError,
@@ -52,14 +59,79 @@ export class ArticleService {
     }
   }
 
-  async getArticles(): Promise<Article[]> {
+  async getArticles(
+    pagination?: PaginationQuery,
+    filters?: ArticleFilters
+  ): Promise<PaginatedResponse<Article>> {
     try {
       const db = database.getDb()
-      const articles = await db.collection('articles').find({}).toArray()
 
-      logger.info(`Fetched ${articles.length} articles`)
+      // Default pagination values
+      const page = Math.max(1, pagination?.page ?? 1)
+      const limit = Math.min(100, Math.max(1, pagination?.limit ?? 10))
+      const skip = (page - 1) * limit
 
-      return articles as unknown as Article[]
+      // Build filter query
+      const query: Record<string, unknown> = {}
+
+      if (filters?.status) {
+        query.status = filters.status
+      }
+
+      if (filters?.authorId) {
+        query.authorId = filters.authorId
+      }
+
+      if (filters?.tags && filters.tags.length > 0) {
+        query.tags = { $in: filters.tags }
+      }
+
+      if (filters?.search) {
+        query.$or = [
+          { title: { $regex: filters.search, $options: 'i' } },
+          { content: { $regex: filters.search, $options: 'i' } },
+          { perex: { $regex: filters.search, $options: 'i' } },
+        ]
+      }
+
+      // Build sort options
+      const sortOptions: Record<string, 1 | -1> = {}
+      if (pagination?.sort) {
+        const sortField = pagination.sort
+        const sortOrder = pagination.order === 'desc' ? -1 : 1
+        sortOptions[sortField] = sortOrder
+      } else {
+        sortOptions.createdAt = -1 // Default sort by newest first
+      }
+
+      // Get total count for pagination
+      const total = await db.collection('articles').countDocuments(query)
+      const totalPages = Math.ceil(total / limit)
+
+      // Get paginated results
+      const articles = await db
+        .collection('articles')
+        .find(query)
+        .sort(sortOptions)
+        .skip(skip)
+        .limit(limit)
+        .toArray()
+
+      const paginationMeta = {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+      }
+
+      logger.info(`Fetched ${articles.length} articles (page ${page}/${totalPages})`)
+
+      return {
+        data: articles as unknown as Article[],
+        pagination: paginationMeta,
+      }
     } catch (error) {
       if (
         error instanceof ValidationError ||
