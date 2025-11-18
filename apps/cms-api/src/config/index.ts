@@ -26,6 +26,8 @@ export interface Config {
 }
 
 // Create typed configuration object
+// NOTE: This function parses environment variables on every call.
+// Prefer using the pre-computed 'config' export for better performance.
 export const getConfig = (): Config => {
   const parsed = envSchema.parse(process.env)
   return {
