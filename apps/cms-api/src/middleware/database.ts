@@ -13,7 +13,7 @@ export const ensureDatabaseConnection = async (
 ): Promise<void> => {
   try {
     // Ensure database connection (lazy loading)
-    await database.ensureConnection()
+    await database.connect()
     next()
   } catch (error) {
     logger.error('Database connection middleware error', error)

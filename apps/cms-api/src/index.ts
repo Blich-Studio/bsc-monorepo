@@ -3,6 +3,8 @@ import cors from 'cors'
 import express from 'express'
 import rateLimit from 'express-rate-limit'
 import helmet from 'helmet'
+import swaggerJSDoc from 'swagger-jsdoc'
+import swaggerUi from 'swagger-ui-express'
 import { config } from './config'
 import database from './database'
 import { databaseHealthCheck, ensureDatabaseConnection } from './middleware/database'
@@ -73,6 +75,223 @@ app.use('/api/v1/cms', ensureDatabaseConnection, routes)
 
 // Health check endpoint
 app.get('/health', databaseHealthCheck)
+
+// Swagger setup
+const swaggerDefinition = {
+  openapi: '3.0.0',
+  info: {
+    title: 'CMS API',
+    version: '1.0.0',
+    description: 'A Node.js/Express API for content management system',
+  },
+  servers: [
+    {
+      url: `http://localhost:${config.port}/api/v1/cms`,
+      description: 'Development server',
+    },
+  ],
+  components: {
+    schemas: {
+      Article: {
+        type: 'object',
+        properties: {
+          _id: {
+            type: 'string',
+            description: 'Article ID',
+          },
+          title: {
+            type: 'string',
+            description: 'Article title',
+          },
+          slug: {
+            type: 'string',
+            description: 'Article slug',
+          },
+          perex: {
+            type: 'string',
+            description: 'Article perex',
+          },
+          content: {
+            type: 'string',
+            description: 'Article content',
+          },
+          authorId: {
+            type: 'string',
+            description: 'Author ID',
+          },
+          status: {
+            type: 'string',
+            enum: ['draft', 'published', 'archived'],
+            description: 'Article status',
+          },
+          tags: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            description: 'Article tags',
+          },
+          createdAt: {
+            type: 'number',
+            description: 'Creation timestamp',
+          },
+          updatedAt: {
+            type: 'number',
+            description: 'Update timestamp',
+          },
+        },
+        required: [
+          '_id',
+          'title',
+          'slug',
+          'perex',
+          'content',
+          'authorId',
+          'status',
+          'tags',
+          'createdAt',
+          'updatedAt',
+        ],
+      },
+      CreateArticleInput: {
+        type: 'object',
+        properties: {
+          title: {
+            type: 'string',
+            minLength: 1,
+            maxLength: 200,
+          },
+          content: {
+            type: 'string',
+            minLength: 1,
+          },
+          authorId: {
+            type: 'string',
+          },
+          slug: {
+            type: 'string',
+            minLength: 1,
+            maxLength: 30,
+          },
+          perex: {
+            type: 'string',
+            minLength: 1,
+            maxLength: 200,
+          },
+          status: {
+            type: 'string',
+            enum: ['draft', 'published', 'archived'],
+            default: 'draft',
+          },
+          tags: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+            default: [],
+          },
+        },
+        required: ['title', 'content', 'authorId', 'slug', 'perex'],
+      },
+      UpdateArticleInput: {
+        type: 'object',
+        properties: {
+          title: {
+            type: 'string',
+            minLength: 1,
+            maxLength: 200,
+          },
+          content: {
+            type: 'string',
+            minLength: 1,
+          },
+          authorId: {
+            type: 'string',
+          },
+          slug: {
+            type: 'string',
+            minLength: 1,
+            maxLength: 30,
+          },
+          perex: {
+            type: 'string',
+            minLength: 1,
+            maxLength: 200,
+          },
+          status: {
+            type: 'string',
+            enum: ['draft', 'published', 'archived'],
+          },
+          tags: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
+        },
+      },
+      Pagination: {
+        type: 'object',
+        properties: {
+          page: {
+            type: 'number',
+            description: 'Current page',
+          },
+          limit: {
+            type: 'number',
+            description: 'Items per page',
+          },
+          total: {
+            type: 'number',
+            description: 'Total items',
+          },
+          totalPages: {
+            type: 'number',
+            description: 'Total pages',
+          },
+          hasNext: {
+            type: 'boolean',
+            description: 'Has next page',
+          },
+          hasPrev: {
+            type: 'boolean',
+            description: 'Has previous page',
+          },
+        },
+      },
+      Error: {
+        type: 'object',
+        properties: {
+          error: {
+            type: 'string',
+            description: 'Error message',
+          },
+          details: {
+            type: 'array',
+            items: {
+              type: 'object',
+            },
+            description: 'Error details',
+          },
+        },
+      },
+    },
+  },
+}
+
+const options = {
+  swaggerDefinition,
+  apis: ['./src/routes/*.ts', './src/controllers/*.ts'],
+}
+
+const swaggerSpec = swaggerJSDoc(options)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
+
+// Raw swagger JSON
+app.get('/swagger.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json')
+  res.send(swaggerSpec)
+})
 
 // Error handling middleware (must be last)
 app.use(notFoundHandler)
