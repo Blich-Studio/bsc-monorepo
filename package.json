@@ -20,6 +20,7 @@
     "turbo": "^2.6.0"
   },
   "dependencies": {
+    "swagger-ui-express": "^5.0.1",
     "vue-router": "^4.6.3"
   }
 }
