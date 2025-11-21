@@ -277,7 +277,7 @@ cp apps/blich-api-gateway/.env.example apps/blich-api-gateway/.env
 | **Backend (REST)**      | Express       | 4.x     |
 | **Backend (GraphQL)**   | NestJS        | 11      |
 | **GraphQL**             | Apollo Server | 4       |
-| **Frontend**            | Vue 3         | 4.x     |
+| **Frontend**            | Vue 3         | 3.x     |
 | **Build Tool**          | Vite          | 5+      |
 | **Build Orchestration** | Turborepo     | 2.6+    |
 | **Testing**             | Jest          | 30+     |
