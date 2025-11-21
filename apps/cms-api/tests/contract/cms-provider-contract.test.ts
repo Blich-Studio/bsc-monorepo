@@ -95,14 +95,14 @@ describe('CMS API Provider Contract Tests', () => {
 
       // Assert: Validate response structure and contract
       expect(response.status).toBe(200)
-      const body = response.body as { data: unknown[]; pagination: unknown }
-      expect(body).toHaveProperty('data')
-      expect(body).toHaveProperty('pagination')
-      expect(Array.isArray(body.data)).toBe(true)
-      expect(body.data).toHaveLength(2)
+      const responseBody = response.body as { data: unknown[]; pagination: unknown }
+      expect(responseBody).toHaveProperty('data')
+      expect(responseBody).toHaveProperty('pagination')
+      expect(Array.isArray(responseBody.data)).toBe(true)
+      expect(responseBody.data).toHaveLength(2)
 
       // Validate pagination metadata
-      const pagination = body.pagination as Record<string, unknown>
+      const pagination = responseBody.pagination as Record<string, unknown>
 
       expect(pagination).toEqual(
         expect.objectContaining({
@@ -116,7 +116,7 @@ describe('CMS API Provider Contract Tests', () => {
       )
 
       // Validate article structure
-      const [article] = body.data as Array<Record<string, unknown>>
+      const [article] = responseBody.data as Array<Record<string, unknown>>
 
       expect(article).toEqual(
         expect.objectContaining({
