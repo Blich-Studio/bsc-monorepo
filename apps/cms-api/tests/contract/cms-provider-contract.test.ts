@@ -1,5 +1,4 @@
 import express from 'express'
-import type { Server as HTTPServer } from 'http'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 import request from 'supertest'
 
@@ -25,7 +24,6 @@ import { errorHandler } from '../../src/middleware/errorHandler'
 import articleRoutes from '../../src/routes/articleRoutes'
 
 let mongoServer: MongoMemoryServer
-let httpServer: HTTPServer
 
 // Create test app
 const app = express()
