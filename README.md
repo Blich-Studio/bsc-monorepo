@@ -30,13 +30,7 @@ npm install
 # Start all development servers
 npm run dev
 
-# Or start individual apps
-npm run dev:cms      # CMS API (Express + TypeScript)
-npm run dev:api      # GraphQL API Gateway (NestJS + Apollo)
-npm run dev:web      # Web application (Vue 3 + Vite)
-npm run dev:admin    # Admin panel (Vue 3 + Vite)
-
-# Run all at once
+# Start all services concurrently (CMS API, API Gateway, Web, Admin)
 npm run dev:all
 ```
 
@@ -78,7 +72,7 @@ npm run start:prod
 ## 📁 Project Structure
 
 ```
-blich-studio-monorepo/
+bsc-monorepo/
 ├── apps/
 │   ├── admin/                 # Admin panel (Vue 3 + Vite)
 │   ├── blich-api-gateway/     # GraphQL API Gateway (NestJS + Apollo)
@@ -192,20 +186,21 @@ The monorepo uses **Turborepo** for intelligent build orchestration:
 
 ```bash
 # Development
-npm run dev              # Start all dev servers
-npm run dev:cms        # CMS API only
-npm run dev:api        # API Gateway only
-npm run dev:web        # Web app only
-npm run dev:admin      # Admin panel only
+npm run dev           # Start all dev servers
+npm run dev:cms      # CMS API only
+npm run dev:api      # API Gateway only
+npm run dev:web      # Web app only
+npm run dev:admin    # Admin panel only
+npm run dev:all      # Start all services concurrently
 
 # Building
-npm run build           # Build all packages
-npm run clean:build     # Remove build artifacts
+npm run build        # Build all packages
+npm run clean:build  # Remove build artifacts
 
 # Quality
-npm run lint            # Lint all code
-npm run typecheck       # TypeScript type checking
-npm run test            # Run all tests
+npm run lint         # Lint all code
+npm run typecheck    # TypeScript type checking
+npm run test         # Run all tests
 ```
 
 ## 📚 Documentation
