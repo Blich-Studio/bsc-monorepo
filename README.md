@@ -1,6 +1,6 @@
 # Blich Studio Monorepo
 
-A comprehensive full-stack monorepo for the Blich Studio project, featuring a GraphQL API Gateway, CMS API, admin panel, and web application. Built with TypeScript, Express, NestJS, Vue 3, and Turbo for scalable development.
+A comprehensive full-stack monorepo for the Blich Studio project, featuring a GraphQL API Gateway, CMS API, admin panel, and web application. Built with TypeScript, Express (CMS API), NestJS (GraphQL API Gateway), Vue 3 (frontends), and Turborepo for scalable development.
 
 ## 🚀 Quick Start
 
@@ -15,7 +15,7 @@ A comprehensive full-stack monorepo for the Blich Studio project, featuring a Gr
 ```bash
 # Clone the repository
 git clone https://github.com/Blich-Studio/bsc-monorepo.git
-cd blich-studio-monorepo
+cd bsc-monorepo
 
 # Install dependencies
 npm install
@@ -81,17 +81,17 @@ npm run start:prod
 blich-studio-monorepo/
 ├── apps/
 │   ├── admin/                 # Admin panel (Vue 3 + Vite)
-│   ├── blich-api-gateway/    # GraphQL API Gateway (NestJS + Apollo)
-│   ├── cms-api/              # CMS API (Express + TypeScript)
-│   └── web/                  # Web application (Vue 3 + Vite)
+│   ├── blich-api-gateway/     # GraphQL API Gateway (NestJS + Apollo)
+│   ├── cms-api/               # CMS API (Express + TypeScript)
+│   └── web/                   # Web application (Vue 3 + Vite)
 ├── packages/
-│   ├── eslint-config/        # Shared ESLint configuration
-│   └── shared/               # Shared types, utilities, and error classes
-├── package.json              # Root monorepo configuration
-├── turbo.json               # Turbo build system configuration
-├── setup.sh                 # Monorepo setup and management script
-├── SETUP_GUIDE.md          # Detailed setup.sh command reference
-└── API_CONTRACT_TESTING.md # Contract testing documentation
+│   ├── eslint-config/         # Shared ESLint configuration
+│   └── shared/                # Shared types, utilities, and error classes
+├── package.json               # Root monorepo configuration
+├── turbo.json                 # Turborepo build system configuration
+├── setup.sh                   # Monorepo setup and management script
+├── SETUP_GUIDE.md             # Detailed setup.sh command reference
+└── API_CONTRACT_TESTING.md    # Contract testing documentation
 ```
 
 ## 🏗️ Architecture
@@ -182,7 +182,7 @@ npm run test:watch
 
 ## 🔧 Build System
 
-The monorepo uses **Turbo** for intelligent build orchestration:
+The monorepo uses **Turborepo** for intelligent build orchestration:
 
 - **Caching**: Smart caching for faster builds
 - **Parallelization**: Run tasks in parallel across workspaces
@@ -284,7 +284,7 @@ cp apps/blich-api-gateway/.env.example apps/blich-api-gateway/.env
 | **GraphQL**             | Apollo Server | 4       |
 | **Frontend**            | Vue 3         | 4.x     |
 | **Build Tool**          | Vite          | 5+      |
-| **Build Orchestration** | Turbo         | 2.6+    |
+| **Build Orchestration** | Turborepo     | 2.6+    |
 | **Testing**             | Jest          | 30+     |
 | **Linting**             | ESLint        | 9+      |
 
