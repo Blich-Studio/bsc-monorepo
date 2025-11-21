@@ -279,7 +279,7 @@ cp apps/blich-api-gateway/.env.example apps/blich-api-gateway/.env
 | **Runtime**             | Node.js       | 18+     |
 | **Package Manager**     | npm           | 10+     |
 | **Language**            | TypeScript    | 5.x     |
-| **Backend (REST)**      | Express       | 5.x     |
+| **Backend (REST)**      | Express       | 4.x     |
 | **Backend (GraphQL)**   | NestJS        | 11      |
 | **GraphQL**             | Apollo Server | 4       |
 | **Frontend**            | Vue 3         | 4.x     |
