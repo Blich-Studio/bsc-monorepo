@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import express from 'express'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 import request from 'supertest'
@@ -112,7 +112,7 @@ describe('CMS API Provider Contract Tests', () => {
           totalPages: expect.any(Number),
           hasNext: expect.any(Boolean),
           hasPrev: expect.any(Boolean),
-        } as any)
+        })
       )
 
       // Validate article structure
@@ -130,7 +130,7 @@ describe('CMS API Provider Contract Tests', () => {
           tags: expect.any(Array),
           createdAt: expect.any(Number),
           updatedAt: expect.any(Number),
-        } as any)
+        })
       )
     })
 
