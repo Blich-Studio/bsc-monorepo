@@ -61,7 +61,7 @@ check_prerequisites() {
     print_error "Git is not installed. Please install Git."
     exit 1
   fi
-  print_success "Git $(git -v | cut -d' ' -f3) is installed"
+  print_success "Git $(git --version | cut -d' ' -f3) is installed"
 }
 
 # Install dependencies
