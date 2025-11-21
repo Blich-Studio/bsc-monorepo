@@ -163,7 +163,7 @@ run_cms_dev() {
   print_info "Launching CMS API server..."
   print_warning "Press Ctrl+C to stop"
 
-  npm run cms:dev
+  npm run dev:cms
 }
 
 # Start API Gateway only
@@ -172,7 +172,7 @@ run_api_dev() {
   print_info "Launching API Gateway server..."
   print_warning "Press Ctrl+C to stop"
 
-  npm run api:dev
+  npm run dev:api
 }
 
 # Start Web App only
@@ -181,7 +181,7 @@ run_web_dev() {
   print_info "Launching Web App server..."
   print_warning "Press Ctrl+C to stop"
 
-  npm run web:dev
+  npm run dev:web
 }
 
 # Start Admin App only
@@ -190,7 +190,7 @@ run_admin_dev() {
   print_info "Launching Admin App server..."
   print_warning "Press Ctrl+C to stop"
 
-  npm run admin:dev
+  npm run dev:admin
 }
 
 # Full setup
