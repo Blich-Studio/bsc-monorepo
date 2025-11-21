@@ -72,8 +72,8 @@ The API Gateway (consumer) defines its expectations of the CMS API:
 
 **Error Handling Contract**
 
-- ✅ Handles CMS API errors gracefully (returns 500+)
-- ✅ Handles 404 errors from CMS API
+- ✅ Handles CMS API errors gracefully (GraphQL returns 200 with errors in response body)
+- ✅ Handles 404 errors from CMS API (error details in GraphQL response)
 
 **Data Type Contract**
 
