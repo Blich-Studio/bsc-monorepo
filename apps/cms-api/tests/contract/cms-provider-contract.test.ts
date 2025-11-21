@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any */
 import express from 'express'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 import request from 'supertest'
@@ -94,13 +95,15 @@ describe('CMS API Provider Contract Tests', () => {
 
       // Assert: Validate response structure and contract
       expect(response.status).toBe(200)
-      expect(response.body).toHaveProperty('data')
-      expect(response.body).toHaveProperty('pagination')
-      expect(Array.isArray(response.body.data)).toBe(true)
-      expect(response.body.data).toHaveLength(2)
+      const body = response.body as { data: unknown[]; pagination: unknown }
+      expect(body).toHaveProperty('data')
+      expect(body).toHaveProperty('pagination')
+      expect(Array.isArray(body.data)).toBe(true)
+      expect(body.data).toHaveLength(2)
 
       // Validate pagination metadata
-      const pagination = response.body.pagination as unknown
+      const pagination = body.pagination as Record<string, unknown>
+
       expect(pagination).toEqual(
         expect.objectContaining({
           page: expect.any(Number),
@@ -109,11 +112,12 @@ describe('CMS API Provider Contract Tests', () => {
           totalPages: expect.any(Number),
           hasNext: expect.any(Boolean),
           hasPrev: expect.any(Boolean),
-        })
+        } as any)
       )
 
       // Validate article structure
-      const article = response.body.data[0]
+      const [article] = body.data as Array<Record<string, unknown>>
+
       expect(article).toEqual(
         expect.objectContaining({
           _id: expect.any(String),
@@ -126,7 +130,7 @@ describe('CMS API Provider Contract Tests', () => {
           tags: expect.any(Array),
           createdAt: expect.any(Number),
           updatedAt: expect.any(Number),
-        })
+        } as any)
       )
     })
 
@@ -151,12 +155,22 @@ describe('CMS API Provider Contract Tests', () => {
 
       // Assert: Validate pagination
       expect(response.status).toBe(200)
-      expect(response.body.data).toHaveLength(5)
-      expect(response.body.pagination.page).toBe(2)
-      expect(response.body.pagination.limit).toBe(5)
-      expect(response.body.pagination.total).toBe(15)
-      expect(response.body.pagination.hasNext).toBe(true)
-      expect(response.body.pagination.hasPrev).toBe(true)
+      const paginatedBody = response.body as {
+        data: unknown[]
+        pagination: {
+          page: number
+          limit: number
+          total: number
+          hasNext: boolean
+          hasPrev: boolean
+        }
+      }
+      expect(paginatedBody.data).toHaveLength(5)
+      expect(paginatedBody.pagination.page).toBe(2)
+      expect(paginatedBody.pagination.limit).toBe(5)
+      expect(paginatedBody.pagination.total).toBe(15)
+      expect(paginatedBody.pagination.hasNext).toBe(true)
+      expect(paginatedBody.pagination.hasPrev).toBe(true)
     })
 
     it('should support filtering by status', async () => {
@@ -192,8 +206,9 @@ describe('CMS API Provider Contract Tests', () => {
 
       // Assert
       expect(response.status).toBe(200)
-      expect(response.body.data).toHaveLength(1)
-      expect(response.body.data[0].status).toBe('published')
+      const filteredBody = response.body as { data: Array<{ status: string }> }
+      expect(filteredBody.data).toHaveLength(1)
+      expect(filteredBody.data[0].status).toBe('published')
     })
 
     it('should handle invalid pagination parameters gracefully', async () => {
@@ -305,10 +320,11 @@ describe('CMS API Provider Contract Tests', () => {
 
       // Assert: Validate error structure
       expect(response.status).toBe(404)
-      expect(response.body).toHaveProperty('message')
-      expect(response.body).toHaveProperty('id')
-      expect(typeof response.body.message).toBe('string')
-      expect(typeof response.body.id).toBe('string')
+      const errorBody = response.body as { message: string; id: string }
+      expect(errorBody).toHaveProperty('message')
+      expect(errorBody).toHaveProperty('id')
+      expect(typeof errorBody.message).toBe('string')
+      expect(typeof errorBody.id).toBe('string')
     })
   })
 })

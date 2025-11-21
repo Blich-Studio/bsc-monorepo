@@ -1,6 +1,24 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import express from 'express'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 import request from 'supertest'
+
+// Mock the config to allow dynamic Mongo URL
+const mockConfig = {
+  mongoUrl: 'mongodb://localhost:27017',
+  databaseName: 'test_db',
+  port: 3000,
+  isTest: true,
+  corsOrigins: [],
+  isDevelopment: true,
+  isProduction: false,
+  nodeEnv: 'test',
+}
+
+jest.mock('../../src/config', () => ({
+  config: mockConfig,
+}))
+
 import database from '../../src/database'
 import { ensureDatabaseConnection } from '../../src/middleware/database'
 import { errorHandler } from '../../src/middleware/errorHandler'
@@ -18,8 +36,8 @@ app.use(errorHandler)
 describe('API Gateway Compatibility Contract', () => {
   beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create()
-    const mongoUri = mongoServer.getUri()
-    await database.connect(mongoUri)
+    mockConfig.mongoUrl = mongoServer.getUri()
+    await database.connect()
   })
 
   afterAll(async () => {
@@ -52,11 +70,12 @@ describe('API Gateway Compatibility Contract', () => {
 
     // Gateway expects: { data: { data: Article[] } } (Axios wraps response in data)
     // So API must return: { data: Article[] }
-    expect(response.body).toHaveProperty('data')
-    expect(Array.isArray(response.body.data)).toBe(true)
-    expect(response.body.data.length).toBe(1)
+    const body = response.body as { data: unknown[] }
+    expect(body).toHaveProperty('data')
+    expect(Array.isArray(body.data)).toBe(true)
+    expect(body.data.length).toBe(1)
 
-    const returnedArticle = response.body.data[0]
+    const [returnedArticle] = body.data as Array<Record<string, unknown>>
     expect(returnedArticle).toHaveProperty('_id')
     expect(returnedArticle).toHaveProperty('title')
     expect(returnedArticle).toHaveProperty('slug')
