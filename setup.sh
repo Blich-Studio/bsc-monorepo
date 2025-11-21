@@ -95,7 +95,7 @@ run_lint_fix() {
   npm run lint:fix --workspace=apps/cms-api 2>/dev/null || print_warning "CMS API lint:fix completed"
 
   echo -e "${YELLOW}API Gateway - Linting (fix)${NC}"
-  npm run lint --workspace=apps/blich-api-gateway 2>/dev/null || print_warning "API Gateway lint completed"
+  npm run lint:fix --workspace=apps/blich-api-gateway 2>/dev/null || print_warning "API Gateway lint:fix completed"
 
   print_success "Linting fixed"
 }
