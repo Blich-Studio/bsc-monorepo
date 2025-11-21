@@ -7,13 +7,26 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --parallel",
     "build": "turbo run build",
-    "cms:dev": "npm run dev --workspace=apps/cms-api",
-    "api:dev": "npm run start:dev --workspace=apps/blich-api-gateway",
-    "web:dev": "npm run dev --workspace=apps/web",
-    "admin:dev": "npm run dev --workspace=apps/admin",
-    "dev:all": "concurrently \"npm:cms:dev\" \"npm:api:dev\" \"npm:web:dev\" \"npm:admin:dev\""
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "test:cov": "turbo run test:coverage",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "typecheck": "turbo run typecheck",
+    "clean": "rm -rf node_modules apps/*/dist apps/*/node_modules packages/*/dist packages/*/node_modules && turbo prune --docker",
+    "clean:build": "rm -rf apps/*/dist apps/*/build packages/*/dist packages/*/build",
+    "format": "turbo run lint:fix",
+    "dev:cms": "npm run dev --workspace=apps/cms-api",
+    "dev:api": "npm run start:dev --workspace=apps/blich-api-gateway",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev:admin": "npm run dev --workspace=apps/admin",
+    "dev:all": "concurrently \"npm:dev:cms\" \"npm:dev:api\" \"npm:dev:web\" \"npm:dev:admin\"",
+    "start": "turbo run start",
+    "start:prod": "turbo run start:prod",
+    "predev": "npm run typecheck",
+    "postinstall": "turbo run build --filter=@blich-studio/shared"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

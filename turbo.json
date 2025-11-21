@@ -12,8 +12,33 @@
     "lint": {
       "outputs": []
     },
+    "lint:fix": {
+      "outputs": [],
+      "cache": false
+    },
     "typecheck": {
       "outputs": []
+    },
+    "test": {
+      "outputs": ["coverage/**"],
+      "cache": false
+    },
+    "test:watch": {
+      "outputs": [],
+      "cache": false,
+      "persistent": true
+    },
+    "test:coverage": {
+      "outputs": ["coverage/**"],
+      "cache": false
+    },
+    "start": {
+      "cache": false,
+      "persistent": true
+    },
+    "start:prod": {
+      "cache": false,
+      "persistent": true
     }
   }
 }
