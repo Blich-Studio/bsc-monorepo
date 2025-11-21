@@ -282,6 +282,76 @@ cp apps/blich-api-gateway/.env.example apps/blich-api-gateway/.env
 | **Build Orchestration** | Turborepo     | 2.6+    |
 | **Testing**             | Jest          | 30+     |
 | **Linting**             | ESLint        | 9+      |
+| **Logging**             | Pino          | 9+      |
+
+## 📝 Logging Best Practices
+
+The monorepo uses a shared logging utility powered by **Pino** located in `@blich-studio/shared`. It enforces the **Elastic Common Schema (ECS)** format for consistent log structure across all services.
+
+### Usage
+
+Import the logger from the shared package:
+
+```typescript
+import { logger, log } from '@blich-studio/shared/utils/logger'
+```
+
+### 1. Standard Logging
+
+Use the `logger` instance for standard log levels. Always pass context objects as the second argument, not as part of the message string.
+
+```typescript
+// ✅ GOOD: Structured logging
+logger.info('User logged in', {
+  user: { id: '123', email: 'user@example.com' },
+  event: { action: 'login' },
+})
+
+// ❌ BAD: String interpolation (hard to query)
+logger.info(`User ${user.id} logged in`)
+```
+
+### 2. Error Logging
+
+Use the `log.error` helper or `logger.error` for consistent error reporting. The logger automatically handles `Error` objects and stack traces.
+
+```typescript
+try {
+  await db.save(data)
+} catch (err) {
+  // ✅ GOOD: Preserves stack trace and error details
+  log.error('Failed to save data', err, {
+    labels: { recordId: '123' },
+  })
+}
+```
+
+### 3. Concise Helpers
+
+The `log` object provides semantic helpers for common scenarios:
+
+```typescript
+// Database errors
+log.db('create_user', error, 'user-123')
+
+// Validation failures
+log.validation('Invalid email format', 'user-123')
+
+// Resource not found
+log.notFound('User', 'user-123')
+
+// Success operations
+log.success('Data export', 'job-456', { count: 500 })
+```
+
+### 4. Configuration
+
+The logger is configured via environment variables:
+
+- `LOG_LEVEL`: `trace` | `debug` | `info` | `warn` | `error` | `fatal` (default: `info`)
+- `NODE_ENV`:
+  - `development`: Pretty prints logs to console
+  - `production`: Outputs structured JSON for aggregation (e.g., ELK stack, Datadog)
 
 ## 🤝 Contributing
 
